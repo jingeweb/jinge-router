@@ -1,17 +1,7 @@
-# jinge-ui-router
+# jinge-router
 
-> router based on [@uirouter/core](https://github.com/ui-router/core) for [jinge](https://github.com/YuhangGe/jinge) mvvm framework
+> simple router for jinge mvvm framework
 
-Most code is copied & modified from [react-ui-router](https://github.com/ui-router/react)
+[中文](./README_zh-cn.md) | English
 
-## demo
-
-| | |
-|--|--|
-| simple-router | https://github.com/YuhangGe/jinge-demos/tree/dev/06-ui-router |
-| todo-mvc | https://github.com/YuhangGe/jinge-demos/tree/dev/08-todo-mvc |
-| jinge-material | https://material.jinge.design |
-
-## todo
-
-* add build dist to npm
+TODO: Translate Chinese README_zh-cn.md to English.

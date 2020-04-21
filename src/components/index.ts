@@ -1,3 +1,3 @@
-export * from './router-view';
-export * from './router-link';
+export * from './view';
+export * from './link';
 export * from './router';

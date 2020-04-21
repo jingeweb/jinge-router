@@ -2,17 +2,19 @@ import {
   Component, ComponentAttributes
 } from 'jinge';
 import {
-  RouteDefine, Router
+  RouteDefine
+} from '../common';
+import {
+  Router
 } from '../router';
 
 export interface RouterAttributes extends ComponentAttributes {
   router?: Router | 'html5' | 'hash';
-  otherwise?: string | RouteDefine;
   routes?: RouteDefine[];
 }
 
 export class RouterComponent extends Component {
-  __router: Router;
+  _router: Router;
 
   constructor(attrs: RouterAttributes) {
     let router: Router;
@@ -32,17 +34,25 @@ export class RouterComponent extends Component {
         router.register(rd);
       });
     }
-    if (attrs.otherwise) {
-      router.otherwise(attrs.otherwise);
-    }
     super(attrs);
+   
+    this._router = router;
+    this.baseHref = attrs.baseHref as string || '/';
 
-    this.__router = router;
-    this.__setContext('#router', router);
+    this.__setContext('router', router);
+    this.__notify('load', this._router);
+  }
+
+  get baseHref(): string {
+    return this._router.baseHref;
+  }
+
+  set baseHref(v: string) {
+    this._router.baseHref = v;
   }
 
   __afterRender(): void {
-    this.__router.start();
+    this._router.start();
   }
 }
 

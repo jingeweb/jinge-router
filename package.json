@@ -1,18 +1,18 @@
 {
-  "name": "jinge-ui-router",
+  "name": "jinge-router",
   "version": "2.0.0",
-  "description": "ui-router for jinge framework",
+  "description": "router for jinge framework",
   "main": "lib/index.js",
   "types": "types/index.d.ts",
   "scripts": {
     "watch": "tsc -w",
-    "ts": "tsc",
+    "ts": "rm -rf ./types && rm -rf ./lib && tsc",
     "lint": "eslint './src/**/*.ts'",
     "validate": "npm ls"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YuhangGe/jinge-ui-router.git"
+    "url": "git+https://github.com/jinge-design/jinge-router.git"
   },
   "keywords": [
     "jinge",
@@ -21,9 +21,9 @@
   "author": "Yuhang Ge <abeyuhang@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/YuhangGe/jinge-ui-router/issues"
+    "url": "https://github.com/jinge-design/jinge-router/issues"
   },
-  "homepage": "https://github.com/YuhangGe/jinge-ui-router#readme",
+  "homepage": "https://github.com/jinge-design/jinge-router#readme",
   "dependencies": {
     "path-to-regexp": "^6.1.0"
   },
@@ -35,8 +35,8 @@
   ],
   "devDependencies": {
     "@types/eslint": "^6.8.0",
-    "@typescript-eslint/eslint-plugin": "^2.27.0",
-    "@typescript-eslint/parser": "^2.27.0",
+    "@typescript-eslint/eslint-plugin": "^2.31.0",
+    "@typescript-eslint/parser": "^2.31.0",
     "eslint": "^6.8.0",
     "precommit-hook": "^3.0.0",
     "typescript": "^3.8.3"

@@ -1,3 +1,3 @@
+export * from './common';
+export * from './router';
 export * from './components';
-export * from './core';
-export * from './view';

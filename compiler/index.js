@@ -1,5 +1,5 @@
 const alias = require('./alias');
 
 module.exports = {
-  uiRouterAlias: alias
+  routerAlias: alias
 };
