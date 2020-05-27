@@ -482,8 +482,8 @@ export class Router {
         if (isFunction(resolveOrFn)) {
           try {
             const rtn = (resolveOrFn as LoadDependencyFn)(matchedRoute.params, newRouteInfo.query, parentResolves);
-            if (isObject(rtn) && isFunction((rtn as {then: Function}).then)) {
-              promises.push((rtn as {then: Function}).then((rr: unknown) => {
+            if (isObject(rtn) && isFunction((rtn as { then: (value: unknown) => Promise<void> } ).then)) {
+              promises.push((rtn as { then: (value: unknown) => Promise<void> }).then((rr: unknown) => {
                 currentResolves[k] = rr;
               }));
             } else {

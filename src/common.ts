@@ -9,7 +9,7 @@ import {
  * @internal
  */
 export interface ComponentConstructor {
-  create(attrs: object): Component;
+  create(attrs: Record<string, unknown>): Component;
 }
 export interface RouterView {
   _shouldUpdateView(from: RouterInfo, to: RouterInfo): Promise<boolean>;
@@ -23,7 +23,7 @@ export type RouteParamsOrQuery = Record<string, unknown>;
 export const VIEW_NAME_PATH = Symbol('#viewNamePath');
 export type LoadComponentFn = (params: RouteParamsOrQuery, query: RouteParamsOrQuery, resolves: Record<string, unknown>) => ComponentConstructor | Promise<ComponentConstructor>;
 export type LoadDependencyFn = (params: RouteParamsOrQuery, query: RouteParamsOrQuery, parentResolves: Record<string, unknown>) => unknown | Promise<unknown>;
-export type RouteDependency = LoadDependencyFn | string | number | boolean | object;
+export type RouteDependency = LoadDependencyFn | string | number | boolean | Record<string, unknown>;
 export type RouteLocation = {
   name: string;
   params?: RouteParamsOrQuery;
