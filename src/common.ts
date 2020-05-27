@@ -5,15 +5,27 @@ import {
   MatchFunction, PathFunction
 } from 'path-to-regexp';
 
+interface ComponentConstructor {
+  create(attrs: Record<string, unknown>): Component;
+}
+
 /**
  * @internal
  */
-export interface ComponentConstructor {
-  create(attrs: Record<string, unknown>): Component;
-}
+export { ComponentConstructor };
+
 export interface RouterView {
+  /**
+   * @internal
+   */
   _shouldUpdateView(from: RouterInfo, to: RouterInfo): Promise<boolean>;
+  /**
+   * @internal
+   */
   _prepareUpdateView(current: RouterInfo, route: RouteMatchPathItem): void;
+  /**
+   * @internal
+   */
   _doUpdateView(err: unknown, current?: RouterInfo, route?: RouteMatchPathItem): void;
 }
 export type RouteParamsOrQuery = Record<string, unknown>;
@@ -31,7 +43,7 @@ export type RouteLocation = {
 }
 export type LoadRouteLocationFn = (params: RouteParamsOrQuery, query: RouteParamsOrQuery) => Promise<string | RouteLocation>;
 
-export type RouteGuardFn<T = void> = (from: RouterInfo, to: RouterInfo) => (T | Promise<T>);
+export type RouteGuardFn<T = void> = (from: RouterInfo, to: RouterInfo) => (void | T | Promise<void | T>);
 export interface RouteDefine {
   path: string;
   name?: string;
