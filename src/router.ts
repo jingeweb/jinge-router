@@ -92,6 +92,12 @@ function matchRoutePath(pathname: string, routes: RouteInstance[], parentPath: R
   return parentPath;
 }
 
+function rollback(currentInfo: RouterInfo, mode: string): void {
+  const _search = encodeParamsOrQuery(currentInfo.query);
+  const _url = currentInfo._pathname + (_search ? '?' + _search : '');
+  history.replaceState(null, '', (mode === 'hash' ? '#' : '') + _url);
+}
+
 export interface ViewNode {
   component: RouterView;
   __views: Map<string, ViewNode>;
@@ -406,7 +412,7 @@ export class Router {
     const viewsToUpdate = getViewsToUpdate(this.__views, routeIdxToUpdate);
     for(let i = 0; i < viewsToUpdate.length; i++) {
       const vtp = viewsToUpdate[i];
-      const shouldUpdated = await (vtp.component._shouldUpdateView(
+      const shouldUpdate = await (vtp.component._shouldUpdateView(
         currentInfo, newRouteInfo
       ));
       // console.log(asyncKey, this.__asyncKey);
@@ -417,41 +423,54 @@ export class Router {
          */
         return;
       }
-      if (shouldUpdated === false) {
+      if (shouldUpdate === false) {
         /**
          * 由于浏览器并不能截获 url 变化，只能是在 url 已经变化后响应。
          * 因此，如果业务层（通过 __routeShouldLeave 回调）阻止了路由的变化，
          * 则需要恢复浏览器 url 。
          */
-        const _search = encodeParamsOrQuery(currentInfo.query);
-        const _url = currentInfo._pathname + (_search ? '?' + _search : '');
-        history.replaceState(null, '', (this.__mode === 'hash' ? '#' : '') + _url);
-        return;
-      } else {
-        vtp.__views?.clear();
+        return rollback(currentInfo, this.__mode);
       }
     }
 
-    /**
-     * 通知即将变更的路由 onLeave 回调。当前版本只会通知最顶部的路由。
-     * 未来版本要考虑可能子路由也应该通知？
-     */
     if (currentInfo._routePath.length > routeIdxToUpdate) {
+      /**
+       * 通知通过 router.beforeEach() 注册的守护函数路由即将跳转。
+       * 如果守护函数显式地返回 `false`，则会阻止路由切换。
+       */
       const beforeEachGuardFns = this.__guard.before;
       for(let i = 0; i < beforeEachGuardFns.length; i++) {
         const shouldLeave = await beforeEachGuardFns[i](currentInfo, newRouteInfo);
-        if (shouldLeave === false || this.__asyncKey !== asyncKey) {
+        if (this.__asyncKey !== asyncKey) {
           return;
         }
+        if (shouldLeave === false) {
+          return rollback(currentInfo, this.__mode);
+        }
       }
+      /**
+       * 通知即将变更的路由 onLeave 回调。当前版本只会通知最顶部的路由。
+       * 未来版本要考虑可能子路由也应该通知？
+       * 
+       * onLeave 回调返回显式地 `false`，则会阻止路由的切换。
+       */
       const routeDef = currentInfo._routePath[routeIdxToUpdate].route.define;
       if (isFunction(routeDef.onLeave)) {
         const shouldLeave = await routeDef.onLeave(currentInfo, newRouteInfo);
-        if (shouldLeave === false || this.__asyncKey !== asyncKey) {
+        if (this.__asyncKey !== asyncKey) {
           return;
+        }
+        if (shouldLeave === false) {
+          return rollback(currentInfo, this.__mode);
         }
       }
     }
+
+    viewsToUpdate.forEach(vtp => {
+      vtp.__views?.clear();
+      vtp.component._prepareUpdateView(newRouteInfo, newMatchPath[routeIdxToUpdate]);
+    });
+
     if (newRouteInfo._routePath.length > routeIdxToUpdate) {
       for(let i = routeIdxToUpdate; i < newRouteInfo._routePath.length; i++) {
         const routeDef = newRouteInfo._routePath[i].route.define;
@@ -463,10 +482,6 @@ export class Router {
         }
       }
     }
-
-    viewsToUpdate.forEach(vtp => {
-      vtp.component._prepareUpdateView(newRouteInfo, newMatchPath[routeIdxToUpdate]);
-    });
 
     let parentResolves = newMatchPath.slice(0, routeIdxToUpdate).reduce((pv, it) => {
       return Object.assign(pv, it.resolves);
