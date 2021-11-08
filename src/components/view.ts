@@ -1,27 +1,41 @@
 import {
-  Component, ComponentAttributes, attrs, RenderFn, $$, __, isComponent, isFunction, assertRenderResults, createFragment, isObject, warn, createElement
+  Component,
+  ComponentAttributes,
+  attrs,
+  RenderFn,
+  $$,
+  __,
+  isComponent,
+  isFunction,
+  assertRenderResults,
+  createFragment,
+  isObject,
+  warn,
+  createElement,
 } from 'jinge';
-import {
-  RouterView, VIEW_NAME_PATH, RouterInfo, RouteMatchPathItem
-} from '../common';
-import {
-  Router
-} from '../router';
+import { RouterView, VIEW_NAME_PATH, RouterInfo, RouteMatchPathItem } from '../common';
+import { Router } from '../router';
 
 interface RouterContentComponent extends Component {
   __routeShouldLeave(from: RouterInfo, to: RouterInfo): Promise<boolean>;
 }
 
-function createEl(renderFn: RenderFn, context: Record<string | symbol, unknown>, parentComponentStyles: Record<string, string>): Component {
-  const el = new Component(attrs({
-    [__]: {
-      context,
-      compStyle: parentComponentStyles,
-      slots: {
-        default: renderFn
-      }
-    }
-  }));
+function createEl(
+  renderFn: RenderFn,
+  context: Record<string | symbol, unknown>,
+  parentComponentStyles: Record<string, string>,
+): Component {
+  const el = new Component(
+    attrs({
+      [__]: {
+        context,
+        compStyle: parentComponentStyles,
+        slots: {
+          default: renderFn,
+        },
+      },
+    }),
+  );
   return el[$$].proxy as Component;
 }
 
@@ -47,8 +61,8 @@ export class RouterViewComponent extends Component implements RouterView {
 
   constructor(attrs: ComponentAttributes) {
     super(attrs);
-    this._name = attrs.name as string || 'default';
-    this._doc = attrs.doc as string || 'before';
+    this._name = (attrs.name as string) || 'default';
+    this._doc = (attrs.doc as string) || 'before';
     this._router = this.__getContext('router') as Router;
     if (!this._router) {
       throw new Error('Context named "router" not found.');
@@ -91,7 +105,7 @@ export class RouterViewComponent extends Component implements RouterView {
     const roots = this[__].rootNodes;
     const oldEl = roots[0] as Component;
     const oldIsComp = isComponent(oldEl);
-    const $el = oldIsComp ? oldEl.__firstDOM : oldEl as unknown as Node;
+    const $el = oldIsComp ? oldEl.__firstDOM : (oldEl as unknown as Node);
     const $pa = $el.parentNode;
     const removeOldEl = (): void => {
       if (oldIsComp) {
@@ -102,17 +116,17 @@ export class RouterViewComponent extends Component implements RouterView {
     };
 
     if (err) {
-      err = isObject(err) ? ((err as Error).message || err.toString()) : err;
+      err = isObject(err) ? (err as Error).message || err.toString() : err;
       const errRenderFn = this[__].slots?.error;
       if (!errRenderFn) {
-        const newEl = createElement('p', {style: 'color: red;'}, err as string);
+        const newEl = createElement('p', { style: 'color: red;' }, err as string);
         $pa.insertBefore(newEl, $el);
         removeOldEl();
         roots[0] = newEl;
         return;
       }
       const newEl = createEl(errRenderFn, this[__].context, this[__].compStyle);
-      (newEl as Component & {error: unknown}).error = err;
+      (newEl as Component & { error: unknown }).error = err;
       const ns = assertRenderResults(newEl.__render());
       $pa.insertBefore(ns.length > 1 ? createFragment(ns) : ns[0], $el);
       removeOldEl();
@@ -120,7 +134,6 @@ export class RouterViewComponent extends Component implements RouterView {
       newEl.__handleAfterRender();
       return;
     }
-    
 
     let CompClazz = null;
     if (routeMatchItem) {
@@ -137,13 +150,15 @@ export class RouterViewComponent extends Component implements RouterView {
       return;
     }
 
-    const newEl = CompClazz.create(attrs({
-      ...routeMatchItem.resolves,
-      [__]: {
-        context: this[__].context,
-        compStyle: this[__].compStyle
-      }
-    }));
+    const newEl = CompClazz.create(
+      attrs({
+        ...routeMatchItem.resolves,
+        [__]: {
+          context: this[__].context,
+          compStyle: this[__].compStyle,
+        },
+      }),
+    );
     const ns = assertRenderResults(newEl.__render());
     $pa.insertBefore(ns.length > 1 ? createFragment(ns) : ns[0], $el);
     removeOldEl();
@@ -161,7 +176,7 @@ export class RouterViewComponent extends Component implements RouterView {
     const roots = this[__].rootNodes;
     const oldEl = roots[0] as Component;
     const oldIsComp = isComponent(oldEl);
-    const $el = oldIsComp ? oldEl.__firstDOM : oldEl as unknown as Node;
+    const $el = oldIsComp ? oldEl.__firstDOM : (oldEl as unknown as Node);
     const $pa = $el.parentNode;
 
     const $cursor: Node = document.createComment('--');
@@ -174,7 +189,7 @@ export class RouterViewComponent extends Component implements RouterView {
     }
 
     /**
-     * 
+     *
      * ````html
      * <router-view>
      * <div slot:default><i class="loading"/>正在加载...</div>

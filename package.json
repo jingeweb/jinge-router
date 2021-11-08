@@ -1,16 +1,17 @@
 {
   "name": "jinge-router",
-  "version": "2.0.5",
+  "version": "3.0.0",
   "description": "router for jinge framework",
   "main": "lib/index.js",
-  "types": "types/index.d.ts",
   "scripts": {
     "watch": "tsc -w",
-    "ts": "rm -rf ./types && rm -rf ./lib && tsc",
-    "lint": "eslint './src/**/*.ts'",
-    "build": "rm -rf ./dist && npm run ts && npm run build-dev && COMPRESS=true npm run build-dev",
-    "build-dev": "node ./script/rollup.js",
-    "validate": "npm ls"
+    "tsc": "rm -rf ./lib && tsc",
+    "lint": "eslint './{src,compiler}/**/*.{js,ts}' --fix",
+    "lint-staged": "lint-staged",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.{js,ts}": "eslint --fix"
   },
   "repository": {
     "type": "git",
@@ -27,25 +28,22 @@
   },
   "homepage": "https://github.com/jinge-design/jinge-router#readme",
   "dependencies": {
-    "path-to-regexp": "^6.1.0"
+    "path-to-regexp": "^6.2.0"
   },
   "peerDependencies": {
-    "jinge": "^2.0.4"
+    "jinge": "^3.0.0"
   },
-  "pre-commit": [
-    "lint"
-  ],
   "devDependencies": {
-    "@types/eslint": "^6.8.1",
-    "@typescript-eslint/eslint-plugin": "^3.1.0",
-    "@typescript-eslint/parser": "^3.1.0",
-    "eslint": "^7.1.0",
-    "jinge": "^2.0.4",
-    "precommit-hook": "^3.0.0",
-    "rollup": "^2.12.0",
-    "rollup-plugin-banner": "^0.2.1",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-terser": "^6.1.0",
-    "typescript": "^3.9.3"
+    "@typescript-eslint/eslint-plugin": "^5.3.0",
+    "@typescript-eslint/parser": "^5.3.0",
+    "eslint": "^8.2.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
+    "jinge": "^3.0.0",
+    "lint-staged": "^11.2.6",
+    "prettier": "^2.4.1",
+    "typescript": "^4.4.4"
   }
 }

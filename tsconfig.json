@@ -10,7 +10,6 @@
     "stripInternal": true,
     "moduleResolution": "node",
     "declaration": true,
-    "declarationDir": "types",
     "sourceMap": true,
     "outDir": "lib",
     "baseUrl": ".",

@@ -1,13 +1,17 @@
 import {
-  Component, setAttribute, ComponentAttributes, MessengerListener,
-  removeEvent, addEvent, __, isObject, watch, unwatch
+  Component,
+  setAttribute,
+  ComponentAttributes,
+  MessengerListener,
+  removeEvent,
+  addEvent,
+  __,
+  isObject,
+  watch,
+  unwatch,
 } from 'jinge';
-import {
-  RouteJumpTarget, RouteLocation, isParamsOrQuerySameOrInclude
-} from '../common';
-import {
-  Router
-} from '../router';
+import { RouteJumpTarget, RouteLocation, isParamsOrQuerySameOrInclude } from '../common';
+import { Router } from '../router';
 
 export class RouterLinkComponent extends Component {
   static get template(): string {
@@ -53,9 +57,9 @@ export class RouterLinkComponent extends Component {
   constructor(attrs: ComponentAttributes) {
     super(attrs);
 
-    this.to = attrs.to as (string | RouteLocation);
-    this.text = attrs.text as string || '';
-    this.target = attrs.target as RouteJumpTarget || '_self';
+    this.to = attrs.to as string | RouteLocation;
+    this.text = (attrs.text as string) || '';
+    this.target = (attrs.target as RouteJumpTarget) || '_self';
     this.replace = !!attrs.replace;
     this.className = attrs.class as string;
     this.style = attrs.style as string;
@@ -75,7 +79,7 @@ export class RouterLinkComponent extends Component {
 
   /**
    * @internal
-   * 
+   *
    * handle router changed event/guard
    */
   _onRc(): void {
@@ -127,7 +131,7 @@ export class RouterLinkComponent extends Component {
     }
     this._router.go(this._to, {
       target: this.target,
-      replace: this.replace
+      replace: this.replace,
     });
   }
 
@@ -139,7 +143,7 @@ export class RouterLinkComponent extends Component {
     this._el = el;
     this._upT();
     this._upHa();
-    this._rcd =  this._router.afterEach(() => {
+    this._rcd = this._router.afterEach(() => {
       this._onRc();
     });
     addEvent(el, 'click', this._clh);
@@ -155,7 +159,7 @@ export class RouterLinkComponent extends Component {
 
   /**
    * @internal
-   * 
+   *
    * update target attribute of link
    */
   _upT(): void {
@@ -166,7 +170,7 @@ export class RouterLinkComponent extends Component {
 
   /**
    * @internal
-   * 
+   *
    * update href and active class
    */
   _upHa(): void {
@@ -176,7 +180,7 @@ export class RouterLinkComponent extends Component {
 
   /**
    * @internal
-   * 
+   *
    * update href attribute of link
    */
   _upH(): void {
@@ -192,7 +196,7 @@ export class RouterLinkComponent extends Component {
 
   /**
    * @internal
-   * 
+   *
    * update active class of link
    */
   _upA(): void {
@@ -203,7 +207,7 @@ export class RouterLinkComponent extends Component {
         this._qw = true;
       }
       isActive = isParamsOrQuerySameOrInclude((this._to as RouteLocation).query, this._router.__info?.query);
-    } else if (this._qw){
+    } else if (this._qw) {
       this._qw = false;
       unwatch(this._router.__info, 'query.*', this._rch);
     }

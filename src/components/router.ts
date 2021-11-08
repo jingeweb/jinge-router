@@ -1,12 +1,6 @@
-import {
-  Component, ComponentAttributes
-} from 'jinge';
-import {
-  RouteDefine
-} from '../common';
-import {
-  Router
-} from '../router';
+import { Component, ComponentAttributes } from 'jinge';
+import { RouteDefine } from '../common';
+import { Router } from '../router';
 
 export interface RouterAttributes extends ComponentAttributes {
   router?: Router | 'html5' | 'hash';
@@ -22,22 +16,22 @@ export class RouterComponent extends Component {
       router = attrs.router as Router;
     } else if (attrs.router === 'hash') {
       router = new Router({
-        mode: 'hash'
+        mode: 'hash',
       });
     } else {
       router = new Router({
-        mode: 'html5'
+        mode: 'html5',
       });
     }
     if (attrs.routes) {
-      (attrs.routes as RouteDefine[]).forEach(rd => {
+      (attrs.routes as RouteDefine[]).forEach((rd) => {
         router.register(rd);
       });
     }
     super(attrs);
-   
+
     this._router = router;
-    this.baseHref = attrs.baseHref as string || '/';
+    this.baseHref = (attrs.baseHref as string) || '/';
 
     this.__setContext('router', router);
     this.__notify('load', this._router);
@@ -55,4 +49,3 @@ export class RouterComponent extends Component {
     this._router.start();
   }
 }
-
