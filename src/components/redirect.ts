@@ -1,12 +1,10 @@
 import { Component } from 'jinge';
-
+import _tpl from './redirect.html';
 /**
  * @internal
  */
 export class RouterParentComponent extends Component {
   static get template(): string {
-    return `
-<!-- import { RouterViewComponent }  from './view'; -->
-<RouterViewComponent doc="after"/>`;
+    return _tpl;
   }
 }

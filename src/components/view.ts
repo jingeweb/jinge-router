@@ -20,16 +20,11 @@ interface RouterContentComponent extends Component {
   __routeShouldLeave(from: RouterInfo, to: RouterInfo): Promise<boolean>;
 }
 
-function createEl(
-  renderFn: RenderFn,
-  context: Record<string | symbol, unknown>,
-  parentComponentStyles: Record<string, string>,
-): Component {
+function createEl(renderFn: RenderFn, context: Record<string | symbol, unknown>): Component {
   const el = new Component(
     attrs({
       [__]: {
         context,
-        compStyle: parentComponentStyles,
         slots: {
           default: renderFn,
         },
@@ -59,10 +54,15 @@ export class RouterViewComponent extends Component implements RouterView {
 
   resolving: boolean;
 
-  constructor(attrs: ComponentAttributes) {
+  constructor(
+    attrs: ComponentAttributes & {
+      name: 'default' | string;
+      doc: 'before' | 'after';
+    },
+  ) {
     super(attrs);
-    this._name = (attrs.name as string) || 'default';
-    this._doc = (attrs.doc as string) || 'before';
+    this._name = attrs.name || 'default';
+    this._doc = attrs.doc || 'before';
     this._router = this.__getContext('router') as Router;
     if (!this._router) {
       throw new Error('Context named "router" not found.');
@@ -125,7 +125,7 @@ export class RouterViewComponent extends Component implements RouterView {
         roots[0] = newEl;
         return;
       }
-      const newEl = createEl(errRenderFn, this[__].context, this[__].compStyle);
+      const newEl = createEl(errRenderFn, this[__].context);
       (newEl as Component & { error: unknown }).error = err;
       const ns = assertRenderResults(newEl.__render());
       $pa.insertBefore(ns.length > 1 ? createFragment(ns) : ns[0], $el);
@@ -155,7 +155,6 @@ export class RouterViewComponent extends Component implements RouterView {
         ...routeMatchItem.resolves,
         [__]: {
           context: this[__].context,
-          compStyle: this[__].compStyle,
         },
       }),
     );
@@ -203,7 +202,7 @@ export class RouterViewComponent extends Component implements RouterView {
       return;
     }
 
-    const loadingEl = createEl(loadingRenderFn, this[__].context, this[__].compStyle);
+    const loadingEl = createEl(loadingRenderFn, this[__].context);
     const ns = assertRenderResults(loadingEl.__render());
     $pa.insertBefore(ns.length > 1 ? createFragment(ns) : ns[0], $cursor);
     $pa.removeChild($cursor);

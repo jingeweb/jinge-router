@@ -327,7 +327,7 @@ export class Router {
 
   destroy(): void {
     if (!this.__started) return;
-    this.__dereg && this.__dereg();
+    this.__dereg?.();
   }
 
   /**

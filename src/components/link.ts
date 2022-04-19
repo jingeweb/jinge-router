@@ -12,17 +12,11 @@ import {
 } from 'jinge';
 import { RouteJumpTarget, RouteLocation, isParamsOrQuerySameOrInclude } from '../common';
 import { Router } from '../router';
+import _tpl from './link.html';
 
 export class RouterLinkComponent extends Component {
   static get template(): string {
-    return `
-<a
- slot-use:default
- e:class="!className && !(isActive && active) ? _udef : (className || '') + (isActive && active ? (className ? ' ' : '') + active : '')"
- e:style="style"
->
-\${text}
-</a>`;
+    return _tpl;
   }
 
   _router: Router;
