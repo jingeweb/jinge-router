@@ -1,6 +1,5 @@
 import {
   Component,
-  ComponentAttributes,
   attrs,
   RenderFn,
   $$,
@@ -12,6 +11,7 @@ import {
   isObject,
   warn,
   createElement,
+  Attributes,
 } from 'jinge';
 import { RouterView, VIEW_NAME_PATH, RouterInfo, RouteMatchPathItem } from '../common';
 import { Router } from '../router';
@@ -55,10 +55,10 @@ export class RouterViewComponent extends Component implements RouterView {
   resolving: boolean;
 
   constructor(
-    attrs: ComponentAttributes & {
-      name: 'default' | string;
-      doc: 'before' | 'after';
-    },
+    attrs: Attributes<{
+      name?: 'default' | string;
+      doc?: 'before' | 'after';
+    }>,
   ) {
     super(attrs);
     this._name = attrs.name || 'default';

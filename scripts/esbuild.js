@@ -9,6 +9,8 @@ const SRC_DIR = path.resolve(__dirname, '../src');
 const DIST_DIR = path.resolve(__dirname, '../lib');
 const COMP_DIR = path.join(SRC_DIR, 'components/');
 
+TemplateParser.aliasManager.initialize();
+
 async function glob(dir) {
   const subs = await fs.readdir(dir);
   let files = [];
@@ -23,29 +25,37 @@ async function glob(dir) {
 }
 
 async function transformFile(file) {
+  const rf = path.relative(SRC_DIR, file);
   const src = await fs.readFile(file, 'utf-8');
   let { code, map, warnings } = await esbuild.transform(src, {
     target: 'es2020',
     format: 'esm',
     loader: path.extname(file).slice(1),
     sourcemap: true,
+    sourcefile: `${path.relative(file, SRC_DIR)}/src/${rf}`,
+    sourcesContent: false,
   });
   if (warnings?.length) console.error(warnings);
   if (!code) return; // ignore empty file
   if (file.startsWith(COMP_DIR)) {
-    const result = await ComponentParser.parse(code, map, {
+    const result = await ComponentParser.parse(code, null, {
       resourcePath: file,
     });
     code = result.code.replace(/"([^"]+)\.html"/g, (m0, m1) => `"${m1}.tpl.js"`);
-    map = JSON.stringify(result.map);
   }
-  const rf = path.relative(SRC_DIR, file).replace(/\.ts$/, '.js');
-  execSync(`mkdir -p ${path.dirname(path.join(DIST_DIR, rf))}`);
-  await Promise.all([fs.writeFile(path.join(DIST_DIR, rf), code), fs.writeFile(path.join(DIST_DIR, rf + '.map'), map)]);
+  const distfile = path.join(DIST_DIR, rf.replace(/\.ts$/, '.js'));
+  execSync(`mkdir -p ${path.dirname(distfile)}`);
+  await Promise.all([
+    fs.writeFile(distfile, code + `\n//# sourceMappingURL=${path.basename(distfile) + '.map'}`),
+    fs.writeFile(
+      distfile + '.map',
+      map.replace('"version": 3', `"version": 3,\n  "sourceRoot": "",\n  "file": "${path.basename(distfile)}"`),
+    ),
+  ]);
 }
 async function transformTpl(file) {
   const cnt = await fs.readFile(file, 'utf-8');
-  const result = await TemplateParser.parse(cnt, null, {
+  const result = await TemplateParser.parse(cnt, {
     resourcePath: file,
     emitErrorFn: (err) => {
       console.error(err);

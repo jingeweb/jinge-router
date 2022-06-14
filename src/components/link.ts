@@ -1,7 +1,6 @@
 import {
   Component,
   setAttribute,
-  ComponentAttributes,
   MessengerListener,
   removeEvent,
   addEvent,
@@ -9,15 +8,14 @@ import {
   isObject,
   watch,
   unwatch,
+  Attributes,
 } from 'jinge';
 import { RouteJumpTarget, RouteLocation, isParamsOrQuerySameOrInclude } from '../common';
 import { Router } from '../router';
 import _tpl from './link.html';
 
 export class RouterLinkComponent extends Component {
-  static get template(): string {
-    return _tpl;
-  }
+  static template = _tpl;
 
   _router: Router;
   _el: HTMLElement;
@@ -48,16 +46,26 @@ export class RouterLinkComponent extends Component {
   style: string;
   isActive: boolean;
 
-  constructor(attrs: ComponentAttributes) {
+  constructor(
+    attrs: Attributes<{
+      to: string | RouteLocation;
+      text: string;
+      target: RouteJumpTarget;
+      replace: boolean;
+      class: string;
+      style: string;
+      active: string;
+    }>,
+  ) {
     super(attrs);
 
-    this.to = attrs.to as string | RouteLocation;
-    this.text = (attrs.text as string) || '';
-    this.target = (attrs.target as RouteJumpTarget) || '_self';
+    this.to = attrs.to;
+    this.text = attrs.text || '';
+    this.target = attrs.target || '_self';
     this.replace = !!attrs.replace;
-    this.className = attrs.class as string;
-    this.style = attrs.style as string;
-    this.active = attrs.active as string;
+    this.className = attrs.class;
+    this.style = attrs.style;
+    this.active = attrs.active;
 
     this._router = this.__getContext('router') as Router;
     if (!this._router) {

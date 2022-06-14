@@ -1,16 +1,17 @@
-import { Component, ComponentAttributes } from 'jinge';
+import { Attributes, Component } from 'jinge';
 import { RouteDefine } from '../common';
 import { Router } from '../router';
-
-export interface RouterAttributes extends ComponentAttributes {
-  router?: Router | 'html5' | 'hash';
-  routes?: RouteDefine[];
-}
 
 export class RouterComponent extends Component {
   _router: Router;
 
-  constructor(attrs: RouterAttributes) {
+  constructor(
+    attrs: Attributes<{
+      router?: Router | 'html5' | 'hash';
+      routes?: RouteDefine[];
+      baseHref?: string;
+    }>,
+  ) {
     let router: Router;
     if (attrs.router instanceof Router) {
       router = attrs.router as Router;
@@ -23,15 +24,13 @@ export class RouterComponent extends Component {
         mode: 'html5',
       });
     }
-    if (attrs.routes) {
-      (attrs.routes as RouteDefine[]).forEach((rd) => {
-        router.register(rd);
-      });
-    }
+    attrs.routes?.forEach((rd) => {
+      router.register(rd);
+    });
     super(attrs);
 
     this._router = router;
-    this.baseHref = (attrs.baseHref as string) || '/';
+    this.baseHref = attrs.baseHref || '/';
 
     this.__setContext('router', router);
     this.__notify('load', this._router);
