@@ -16,7 +16,6 @@ import {
   RouteDefine,
   RouteParamsOrQuery,
   RouteJumpOptions,
-  isParamsOrQuerySameOrInclude,
   RouteMatchPathItem,
   RouteGuardFn,
   LoadDependencyFn,
@@ -25,12 +24,11 @@ import {
   RouterInfo,
   RouteLocation,
   LoadRouteLocationFn,
-  cloneParamsOrQuery,
-  encodeParamsOrQuery,
   LoadComponentFn,
   ComponentConstructor,
 } from './common';
 import { RouterParentComponent } from './components/redirect';
+import { cloneParamsOrQuery, encodeParamsOrQuery, isParamsOrQuerySameOrInclude } from './util';
 
 export interface RouterOptions {
   mode: 'hash' | 'html5';
@@ -73,7 +71,7 @@ function addRoute(
   route: RouteDefine,
   container: RouteInstance[],
   parent: RouteInstance = null,
-): void {
+) {
   const hasChild = route.children && route.children.length > 0;
   const path = normPath(route.path + (hasChild ? '/' : ''));
   const name = route.name || (parent ? parent.name : '') + route.path;
@@ -127,7 +125,7 @@ function matchRoutePath(pathname: string, routes: RouteInstance[], parentPath: R
   return parentPath;
 }
 
-function rollback(currentInfo: RouterInfo, mode: string): void {
+function rollback(currentInfo: RouterInfo, mode: string) {
   const _search = encodeParamsOrQuery(currentInfo.query);
   const _url = currentInfo._pathname + (_search ? '?' + _search : '');
   history.replaceState(null, '', (mode === 'hash' ? '#' : '') + _url);
@@ -194,7 +192,7 @@ function getViewsToUpdate(
 
 function addGuard(arr: unknown[], fn: unknown): DeregisterFn {
   arrayPushIfNotExist(arr, fn);
-  return (): void => {
+  return () => {
     arrayRemove(arr, fn);
   };
 }
@@ -259,7 +257,7 @@ export class Router {
   /**
    * @internal
    */
-  __regView(viewNamePath: string[], viewComponent: RouterView): void {
+  __regView(viewNamePath: string[], viewComponent: RouterView) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let node = this as unknown as ViewNode;
     for (let i = 0; i < viewNamePath.length - 1; i++) {
@@ -285,7 +283,7 @@ export class Router {
   /**
    * @internal
    */
-  __deregView(viewNamePath: string[]): void {
+  __deregView(viewNamePath: string[]) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let node = this as unknown as ViewNode;
     for (let i = 0; i < viewNamePath.length - 1; i++) {
@@ -306,7 +304,7 @@ export class Router {
     return this;
   }
 
-  start(): void {
+  start() {
     if (this.__started) return;
     this.__started = true;
 
@@ -325,7 +323,7 @@ export class Router {
     }
   }
 
-  destroy(): void {
+  destroy() {
     if (!this.__started) return;
     this.__dereg?.();
   }
@@ -333,7 +331,7 @@ export class Router {
   /**
    * @internal
    */
-  _onErr(err: unknown): void {
+  _onErr(err: unknown) {
     // eslint-disable-next-line no-console
     console.error(err);
   }
@@ -341,7 +339,7 @@ export class Router {
   /**
    * @internal
    */
-  _onHashChange(): void {
+  _onHashChange() {
     const hash = location.hash.slice(1);
     const qi = hash.indexOf('?');
     this._update(qi > 0 ? hash.substring(0, qi) : hash, qi > 0 ? hash.substring(qi + 1) : '').catch((err) =>
@@ -352,7 +350,7 @@ export class Router {
   /**
    * @internal
    */
-  _onStateChange(): void {
+  _onStateChange() {
     this._update(location.pathname, location.search ? location.search.substring(1) : '').catch((err) =>
       this._onErr(err),
     );
@@ -589,7 +587,7 @@ export class Router {
                   }),
                 );
               } else {
-                loadedComClasses[cn] = CompClazz as ComponentConstructor;
+                loadedComClasses[cn] = CompClazz as unknown as ComponentConstructor;
               }
             } catch (ex) {
               viewsToUpdate.forEach((vtp) => {
@@ -700,7 +698,7 @@ export class Router {
       target: '_self',
       replace: false,
     },
-  ): void {
+  ) {
     const pathAndSearch = getPathnameAndSearch(destination, this.__map, this.__base);
     if (!pathAndSearch) {
       return;
