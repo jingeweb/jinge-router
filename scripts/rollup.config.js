@@ -7,6 +7,9 @@ export default [
     input: 'lib/index.js',
     external: ['jinge'],
     output: {
+      globals: {
+        jinge: 'jinge',
+      },
       sourcemap: true,
       name: 'jinge-router',
       file: './dist/jinge-router.js',
@@ -18,6 +21,9 @@ export default [
     input: 'lib/index.js',
     external: ['jinge'],
     output: {
+      globals: {
+        jinge: 'jinge',
+      },
       sourcemap: true,
       name: 'jinge-router',
       file: './dist/jinge-router.min.js',

@@ -6,7 +6,7 @@
   "types": "src/index.ts",
   "scripts": {
     "dev": "WATCH=true npm run build",
-    "build": "rm -rf ./lib && node ./scripts/esbuild.js && rollup -c ./scripts/rollup.config.js",
+    "build": "rm -rf ./lib && tsc && rm -rf .tmp && node ./scripts/esbuild.js && rollup -c ./scripts/rollup.config.js",
     "lint": "tsc --noEmit && eslint './{src,compiler,scripts}/**/*.{js,ts}' --fix",
     "lint-staged": "lint-staged",
     "prepare": "husky install"
@@ -29,8 +29,6 @@
   },
   "homepage": "https://github.com/jingeweb/jinge-router#readme",
   "dependencies": {
-    "jinge": "^3.2.2",
-    "jinge-compiler": "^3.2.2",
     "path-to-regexp": "^6.2.1"
   },
   "peerDependencies": {
@@ -38,20 +36,22 @@
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.3.0",
-    "@types/node": "^18.0.1",
-    "@typescript-eslint/eslint-plugin": "^5.30.4",
-    "@typescript-eslint/parser": "^5.30.4",
+    "@types/node": "^18.7.4",
+    "@typescript-eslint/eslint-plugin": "^5.33.0",
+    "@typescript-eslint/parser": "^5.33.0",
     "chokidar": "^3.5.3",
-    "esbuild": "^0.14.48",
-    "eslint": "^8.19.0",
+    "esbuild": "^0.15.3",
+    "eslint": "^8.22.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-import-resolver-typescript": "^3.2.0",
+    "eslint-import-resolver-typescript": "^3.4.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.1",
+    "jinge": "^3.2.2",
+    "jinge-compiler": "^3.2.2",
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
-    "rollup": "^2.77.2",
+    "rollup": "^2.78.0",
     "rollup-plugin-sourcemaps": "^0.6.3",
     "rollup-plugin-terser": "^7.0.2",
     "typescript": "^4.7.4"
