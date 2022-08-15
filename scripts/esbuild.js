@@ -38,7 +38,7 @@ async function transformFile(file) {
   if (warnings?.length) console.error(warnings);
   if (!code) return; // ignore empty file
   if (file.startsWith(COMP_DIR)) {
-    const result = await ComponentParser.parse(code, null, {
+    const result = ComponentParser.parse(code, null, {
       resourcePath: file,
     });
     code = result.code.replace(/"([^"]+)\.html"/g, (m0, m1) => `"${m1}.tpl.js"`);
@@ -55,7 +55,7 @@ async function transformFile(file) {
 }
 async function transformTpl(file) {
   const cnt = await fs.readFile(file, 'utf-8');
-  const result = await TemplateParser.parse(cnt, {
+  const result = TemplateParser.parse(cnt, {
     resourcePath: file,
     emitErrorFn: (err) => {
       console.error(err);

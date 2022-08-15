@@ -74,11 +74,11 @@ export class RouterViewComponent extends Component implements RouterView {
     this.resolving = false;
   }
 
-  __afterRender(): void {
+  __afterRender() {
     this._router.__regView(this._path, this);
   }
 
-  __render(): Node[] {
+  __render() {
     const el = document.createComment('router-view');
     this[__].rootNodes.push(el);
     return this[__].rootNodes as Node[];
@@ -101,13 +101,13 @@ export class RouterViewComponent extends Component implements RouterView {
   /**
    * @internal
    */
-  _doUpdateView(err: unknown, current: RouterInfo, routeMatchItem: RouteMatchPathItem): void {
+  _doUpdateView(err: unknown, current: RouterInfo, routeMatchItem: RouteMatchPathItem) {
     const roots = this[__].rootNodes;
     const oldEl = roots[0] as Component;
     const oldIsComp = isComponent(oldEl);
     const $el = oldIsComp ? oldEl.__firstDOM : (oldEl as unknown as Node);
     const $pa = $el.parentNode;
-    const removeOldEl = (): void => {
+    const removeOldEl = () => {
       if (oldIsComp) {
         oldEl.__destroy(true);
       } else {
@@ -116,7 +116,7 @@ export class RouterViewComponent extends Component implements RouterView {
     };
 
     if (err) {
-      err = isObject(err) ? (err as Error).message || err.toString() : err;
+      err = isObject(err) ? err.message || err.toString() : err;
       const errRenderFn = this[__].slots?.error;
       if (!errRenderFn) {
         const newEl = createElement('p', { style: 'color: red;' }, err as string);
@@ -168,7 +168,7 @@ export class RouterViewComponent extends Component implements RouterView {
   /**
    * @internal
    */
-  _prepareUpdateView(): void {
+  _prepareUpdateView() {
     if (this._doc !== 'before') {
       return;
     }
@@ -210,7 +210,7 @@ export class RouterViewComponent extends Component implements RouterView {
     roots[0] = loadingEl;
   }
 
-  __beforeDestroy(): void {
+  __beforeDestroy() {
     this._router.__deregView(this._path);
   }
 }

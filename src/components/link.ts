@@ -10,7 +10,8 @@ import {
   unwatch,
   Attributes,
 } from 'jinge';
-import { RouteJumpTarget, RouteLocation, isParamsOrQuerySameOrInclude } from '../common';
+import { isParamsOrQuerySameOrInclude } from '../util';
+import { RouteJumpTarget, RouteLocation } from '../common';
 import { Router } from '../router';
 import _tpl from './link.html';
 
@@ -42,7 +43,6 @@ export class RouterLinkComponent extends Component {
 
   replace: boolean;
   text: string;
-  className: string;
   style: string;
   isActive: boolean;
 
@@ -63,8 +63,6 @@ export class RouterLinkComponent extends Component {
     this.text = attrs.text || '';
     this.target = attrs.target || '_self';
     this.replace = !!attrs.replace;
-    this.className = attrs.class;
-    this.style = attrs.style;
     this.active = attrs.active;
 
     this._router = this.__getContext('router') as Router;
@@ -84,7 +82,7 @@ export class RouterLinkComponent extends Component {
    *
    * handle router changed event/guard
    */
-  _onRc(): void {
+  _onRc() {
     this._upA();
   }
 
@@ -124,7 +122,7 @@ export class RouterLinkComponent extends Component {
   /**
    * @internal
    */
-  _onClick(e: KeyboardEvent): void {
+  _onClick(e: KeyboardEvent) {
     if (e.defaultPrevented || e.metaKey || e.ctrlKey) {
       return;
     }
@@ -137,7 +135,7 @@ export class RouterLinkComponent extends Component {
     });
   }
 
-  __afterRender(): void {
+  __afterRender() {
     const el = this.__firstDOM as HTMLElement;
     if (this._tag >= 0) {
       this._tag = el.tagName === 'A' ? 0 : 1;
@@ -151,7 +149,7 @@ export class RouterLinkComponent extends Component {
     addEvent(el, 'click', this._clh);
   }
 
-  __beforeDestroy(): void {
+  __beforeDestroy() {
     removeEvent(this._el, 'click', this._clh);
     this._rcd();
     if (this._qw) {
@@ -164,7 +162,7 @@ export class RouterLinkComponent extends Component {
    *
    * update target attribute of link
    */
-  _upT(): void {
+  _upT() {
     if (this._tag <= 0) {
       setAttribute(this._el, 'target', this.target);
     }
@@ -175,7 +173,7 @@ export class RouterLinkComponent extends Component {
    *
    * update href and active class
    */
-  _upHa(): void {
+  _upHa() {
     this._upH();
     this._upA();
   }
@@ -185,7 +183,7 @@ export class RouterLinkComponent extends Component {
    *
    * update href attribute of link
    */
-  _upH(): void {
+  _upH() {
     if (this._tag <= 0) {
       let href;
       if (!this._to || !(href = this._router.href(this._to))) {
@@ -201,7 +199,7 @@ export class RouterLinkComponent extends Component {
    *
    * update active class of link
    */
-  _upA(): void {
+  _upA() {
     let isActive = this._to && this._router.includes(this._to);
     if (isActive && isObject(this._to) && (this._to as RouteLocation).query) {
       if (!this._qw) {

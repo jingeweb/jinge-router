@@ -1,6 +1,6 @@
 <a
  slot-use:default
- e:class="!className && !(isActive && active) ? _udef : (className || '') + (isActive && active ? (className ? ' ' : '') + active : '')"
+ e:class="[isActive && active, class]"
  e:style="style"
 >
 ${text}
