@@ -6,7 +6,6 @@ import {
   __,
   isComponent,
   isFunction,
-  assertRenderResults,
   createFragment,
   isObject,
   warn,
@@ -74,11 +73,11 @@ export class RouterViewComponent extends Component implements RouterView {
     this.resolving = false;
   }
 
-  __afterRender(): void {
-    this._router.__regView(this._path, this);
+  async __afterRender() {
+    await this._router.__regView(this._path, this);
   }
 
-  __render(): Node[] {
+  __doRender() {
     const el = document.createComment('router-view');
     this[__].rootNodes.push(el);
     return this[__].rootNodes as Node[];
@@ -101,37 +100,37 @@ export class RouterViewComponent extends Component implements RouterView {
   /**
    * @internal
    */
-  _doUpdateView(err: unknown, current: RouterInfo, routeMatchItem: RouteMatchPathItem): void {
+  async _doUpdateView(err: unknown, current: RouterInfo, routeMatchItem: RouteMatchPathItem) {
     const roots = this[__].rootNodes;
     const oldEl = roots[0] as Component;
     const oldIsComp = isComponent(oldEl);
     const $el = oldIsComp ? oldEl.__firstDOM : (oldEl as unknown as Node);
     const $pa = $el.parentNode;
-    const removeOldEl = (): void => {
+    const removeOldEl = async () => {
       if (oldIsComp) {
-        oldEl.__destroy(true);
+        await oldEl.__destroy(true);
       } else {
         $pa.removeChild($el);
       }
     };
 
     if (err) {
-      err = isObject(err) ? (err as Error).message || err.toString() : err;
+      err = isObject(err) ? (err as unknown as Error).message || err.toString() : err;
       const errRenderFn = this[__].slots?.error;
       if (!errRenderFn) {
         const newEl = createElement('p', { style: 'color: red;' }, err as string);
         $pa.insertBefore(newEl, $el);
-        removeOldEl();
+        await removeOldEl();
         roots[0] = newEl;
         return;
       }
       const newEl = createEl(errRenderFn, this[__].context);
       (newEl as Component & { error: unknown }).error = err;
-      const ns = assertRenderResults(newEl.__render());
+      const ns = await newEl.__render();
       $pa.insertBefore(ns.length > 1 ? createFragment(ns) : ns[0], $el);
-      removeOldEl();
+      await removeOldEl();
       roots[0] = newEl;
-      newEl.__handleAfterRender();
+      await newEl.__handleAfterRender();
       return;
     }
 
@@ -145,7 +144,7 @@ export class RouterViewComponent extends Component implements RouterView {
     if (!CompClazz) {
       const newEl = document.createComment('router-view');
       $pa.insertBefore(newEl, $el);
-      removeOldEl();
+      await removeOldEl();
       roots[0] = newEl;
       return;
     }
@@ -158,17 +157,17 @@ export class RouterViewComponent extends Component implements RouterView {
         },
       }),
     );
-    const ns = assertRenderResults(newEl.__render());
+    const ns = await newEl.__render();
     $pa.insertBefore(ns.length > 1 ? createFragment(ns) : ns[0], $el);
-    removeOldEl();
+    await removeOldEl();
     roots[0] = newEl;
-    newEl.__handleAfterRender();
+    await newEl.__handleAfterRender();
   }
 
   /**
    * @internal
    */
-  _prepareUpdateView(): void {
+  async _prepareUpdateView() {
     if (this._doc !== 'before') {
       return;
     }
@@ -182,7 +181,7 @@ export class RouterViewComponent extends Component implements RouterView {
     $pa.insertBefore($cursor, $el);
 
     if (oldIsComp) {
-      oldEl.__destroy(true);
+      await oldEl.__destroy(true);
     } else {
       $pa.removeChild($el);
     }
@@ -203,7 +202,7 @@ export class RouterViewComponent extends Component implements RouterView {
     }
 
     const loadingEl = createEl(loadingRenderFn, this[__].context);
-    const ns = assertRenderResults(loadingEl.__render());
+    const ns = await loadingEl.__render();
     $pa.insertBefore(ns.length > 1 ? createFragment(ns) : ns[0], $cursor);
     $pa.removeChild($cursor);
 

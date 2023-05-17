@@ -38,7 +38,7 @@ export interface RouterOptions {
 }
 
 function normPath(p: string): string {
-  if (!p || !p.startsWith('/')) p = '/' + p;
+  if (!p?.startsWith('/')) p = '/' + p;
   return p.replace(/[/\\]+/g, '/');
 }
 
@@ -112,11 +112,11 @@ function matchRoutePath(pathname: string, routes: RouteInstance[], parentPath: R
        * 子路由继承父亲路由的 params
        */
       const params = parentPath.reduce((pv, it) => {
-        return Object.assign({}, it.params);
+        return Object.assign(pv, it.params);
       }, {});
       parentPath.push({
         route,
-        params: Object.assign(params, matches.params),
+        params: Object.assign(params, matches.params) as RouteParamsOrQuery,
       });
       if (route.children) {
         matchRoutePath(pathname.substring(matches.path.length - 1), route.children, parentPath);
@@ -259,7 +259,7 @@ export class Router {
   /**
    * @internal
    */
-  __regView(viewNamePath: string[], viewComponent: RouterView): void {
+  async __regView(viewNamePath: string[], viewComponent: RouterView) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let node = this as unknown as ViewNode;
     for (let i = 0; i < viewNamePath.length - 1; i++) {
@@ -279,7 +279,7 @@ export class Router {
     if (viewNamePath.length > this.__info._routePath.length) {
       return;
     }
-    viewComponent._doUpdateView(null, this.__info, this.__info._routePath[viewNamePath.length - 1]);
+    await viewComponent._doUpdateView(null, this.__info, this.__info._routePath[viewNamePath.length - 1]);
   }
 
   /**
@@ -306,7 +306,7 @@ export class Router {
     return this;
   }
 
-  start(): void {
+  start() {
     if (this.__started) return;
     this.__started = true;
 
@@ -518,10 +518,10 @@ export class Router {
       }
     }
 
-    viewsToUpdate.forEach((vtp) => {
+    for await (const vtp of viewsToUpdate) {
       vtp.__views?.clear();
-      vtp.component._prepareUpdateView(newRouteInfo, newMatchPath[routeIdxToUpdate]);
-    });
+      await vtp.component._prepareUpdateView(newRouteInfo, newMatchPath[routeIdxToUpdate]);
+    }
 
     if (newRouteInfo._routePath.length > routeIdxToUpdate) {
       for (let i = routeIdxToUpdate; i < newRouteInfo._routePath.length; i++) {
@@ -544,8 +544,9 @@ export class Router {
       const resolveDefs = matchedRoute.route.define.resolves;
       const currentResolves = { ...parentResolves };
       const promises: Promise<unknown>[] = [];
-      resolveDefs &&
-        Object.keys(resolveDefs).forEach((k) => {
+
+      if (resolveDefs) {
+        for await (const k of Object.keys(resolveDefs)) {
           const resolveOrFn = resolveDefs[k];
           if (isFunction(resolveOrFn)) {
             try {
@@ -560,15 +561,16 @@ export class Router {
                 currentResolves[k] = rtn;
               }
             } catch (ex) {
-              viewsToUpdate.forEach((vtp) => {
-                vtp.component._doUpdateView(ex);
-              });
+              for await (const vtp of viewsToUpdate) {
+                await vtp.component._doUpdateView(ex);
+              }
               throw ex;
             }
           } else {
             currentResolves[k] = resolveOrFn;
           }
-        });
+        }
+      }
 
       let loadedComClasses = matchedRoute.route.components;
       if (!loadedComClasses) {
@@ -577,7 +579,7 @@ export class Router {
         if (matchedRoute.route.define.component) {
           comClasses.default = matchedRoute.route.define.component;
         }
-        Object.keys(comClasses).forEach((cn) => {
+        for await (const cn of Object.keys(comClasses)) {
           const CompClazz = comClasses[cn];
           if (isFunction(CompClazz) && !isComponent(CompClazz)) {
             try {
@@ -589,27 +591,27 @@ export class Router {
                   }),
                 );
               } else {
-                loadedComClasses[cn] = CompClazz as ComponentConstructor;
+                loadedComClasses[cn] = CompClazz as unknown as ComponentConstructor;
               }
             } catch (ex) {
-              viewsToUpdate.forEach((vtp) => {
-                vtp.component._doUpdateView(ex);
-              });
+              for await (const vtp of viewsToUpdate) {
+                await vtp.component._doUpdateView(ex);
+              }
               throw ex;
             }
           } else {
             loadedComClasses[cn] = CompClazz as ComponentConstructor;
           }
-        });
+        }
       }
 
       try {
         await Promise.all(promises);
       } catch (ex) {
         if (asyncKey === this.__asyncKey) {
-          viewsToUpdate.forEach((vtp) => {
-            vtp.component._doUpdateView(ex);
-          });
+          for await (const vtp of viewsToUpdate) {
+            await vtp.component._doUpdateView(ex);
+          }
         }
         throw ex;
       }
@@ -625,9 +627,9 @@ export class Router {
     const oldRouteInfo = Object.assign({}, currentInfo);
     Object.assign(currentInfo, newRouteInfo);
 
-    viewsToUpdate.forEach((vtp) => {
-      vtp.component._doUpdateView(null, newRouteInfo, newMatchPath[routeIdxToUpdate]);
-    });
+    for await (const vtp of viewsToUpdate) {
+      await vtp.component._doUpdateView(null, newRouteInfo, newMatchPath[routeIdxToUpdate]);
+    }
 
     this.__guard.after.forEach((fn) => {
       fn(oldRouteInfo, newRouteInfo);
