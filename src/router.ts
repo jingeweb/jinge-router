@@ -259,7 +259,7 @@ export class Router {
   /**
    * @internal
    */
-  async __regView(viewNamePath: string[], viewComponent: RouterView) {
+  __regView(viewNamePath: string[], viewComponent: RouterView) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let node = this as unknown as ViewNode;
     for (let i = 0; i < viewNamePath.length - 1; i++) {
@@ -279,7 +279,7 @@ export class Router {
     if (viewNamePath.length > this.__info._routePath.length) {
       return;
     }
-    await viewComponent._doUpdateView(null, this.__info, this.__info._routePath[viewNamePath.length - 1]);
+    viewComponent._doUpdateView(null, this.__info, this.__info._routePath[viewNamePath.length - 1]);
   }
 
   /**
@@ -518,9 +518,9 @@ export class Router {
       }
     }
 
-    for await (const vtp of viewsToUpdate) {
+    for (const vtp of viewsToUpdate) {
       vtp.__views?.clear();
-      await vtp.component._prepareUpdateView(newRouteInfo, newMatchPath[routeIdxToUpdate]);
+      vtp.component._prepareUpdateView(newRouteInfo, newMatchPath[routeIdxToUpdate]);
     }
 
     if (newRouteInfo._routePath.length > routeIdxToUpdate) {
@@ -561,8 +561,8 @@ export class Router {
                 currentResolves[k] = rtn;
               }
             } catch (ex) {
-              for await (const vtp of viewsToUpdate) {
-                await vtp.component._doUpdateView(ex);
+              for (const vtp of viewsToUpdate) {
+                vtp.component._doUpdateView(ex);
               }
               throw ex;
             }
@@ -594,8 +594,8 @@ export class Router {
                 loadedComClasses[cn] = CompClazz as unknown as ComponentConstructor;
               }
             } catch (ex) {
-              for await (const vtp of viewsToUpdate) {
-                await vtp.component._doUpdateView(ex);
+              for (const vtp of viewsToUpdate) {
+                vtp.component._doUpdateView(ex);
               }
               throw ex;
             }
@@ -609,8 +609,8 @@ export class Router {
         await Promise.all(promises);
       } catch (ex) {
         if (asyncKey === this.__asyncKey) {
-          for await (const vtp of viewsToUpdate) {
-            await vtp.component._doUpdateView(ex);
+          for (const vtp of viewsToUpdate) {
+            vtp.component._doUpdateView(ex);
           }
         }
         throw ex;
@@ -627,8 +627,8 @@ export class Router {
     const oldRouteInfo = Object.assign({}, currentInfo);
     Object.assign(currentInfo, newRouteInfo);
 
-    for await (const vtp of viewsToUpdate) {
-      await vtp.component._doUpdateView(null, newRouteInfo, newMatchPath[routeIdxToUpdate]);
+    for (const vtp of viewsToUpdate) {
+      vtp.component._doUpdateView(null, newRouteInfo, newMatchPath[routeIdxToUpdate]);
     }
 
     this.__guard.after.forEach((fn) => {
