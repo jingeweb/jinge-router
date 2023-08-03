@@ -535,9 +535,12 @@ export class Router {
       }
     }
 
-    let parentResolves = newMatchPath.slice(0, routeIdxToUpdate).reduce((pv, it) => {
-      return Object.assign(pv, it.resolves);
-    }, {} as Record<string, unknown>);
+    let parentResolves = newMatchPath.slice(0, routeIdxToUpdate).reduce(
+      (pv, it) => {
+        return Object.assign(pv, it.resolves);
+      },
+      {} as Record<string, unknown>,
+    );
 
     for (let i = routeIdxToUpdate; i < newMatchPath.length; i++) {
       const matchedRoute = newMatchPath[i];
