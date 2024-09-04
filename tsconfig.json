@@ -1,21 +1,16 @@
 {
   "compilerOptions": {
-    "module": "esnext",
+    "module": "ESNext",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es2019",
+    "target": "ES2022",
     "noImplicitAny": true,
     "noImplicitReturns": true,
-    "alwaysStrict": true,
-    "stripInternal": true,
-    "moduleResolution": "node",
-    "declaration": true,
-    "declarationDir": "lib",
-    "sourceMap": true,
-    "outDir": ".tmp",
-    "baseUrl": "."
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "strict": true,
+    "jsx": "preserve"
   },
   "include": [
-    "src/**/*"
+    "src/**/*", "scripts/**/*", "*.js", "*.mjs"
   ]
 }

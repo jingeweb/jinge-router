@@ -1,5 +1,5 @@
 import { isObject, isUndefined } from 'jinge';
-import { RouteParamsOrQuery } from './common';
+import type { RouteParamsOrQuery } from './common';
 
 /**
  * @param strict 如果 strict 为 false，则返回 src 是否被 dst 包含；否则返回 src 是否和 dst 完全相同。strict 默认为 true。
@@ -31,18 +31,14 @@ export function isParamsOrQuerySameOrInclude(src: RouteParamsOrQuery, dst: Route
 }
 
 export function cloneParamsOrQuery(v: RouteParamsOrQuery): RouteParamsOrQuery {
-  return Object.fromEntries(
-    Object.keys(v).map((k) => {
-      return [k, v[k]];
-    }),
-  );
+  return {...v};
 }
 
 export function encodeParamsOrQuery(v: RouteParamsOrQuery): string {
   if (!isObject(v)) return '';
-  return Object.keys(v)
-    .map((k) => {
-      return encodeURIComponent(k) + '=' + encodeURIComponent(v[k] as string);
+  return Object.entries(v)
+    .map(([k, v]) => {
+      return `${encodeURIComponent(k)  }=${  encodeURIComponent(v as string)}`;
     })
     .join('&');
 }
