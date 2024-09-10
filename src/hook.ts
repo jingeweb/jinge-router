@@ -1,6 +1,6 @@
 import type { GuardFn } from './common';
 import { getCurrentComponentHost } from 'jinge';
-import { getRouterCoreContext } from './core';
+import { QUERY, getRouterCoreContext } from './core/router';
 
 export const BEFORE_ROUTE_LEAVE = Symbol('beforeRouteLeaveCallback');
 
@@ -12,6 +12,6 @@ export function beforeRouteLeave(guardFn: GuardFn) {
   el[BEFORE_ROUTE_LEAVE] = guardFn;
 }
 
-export function useRouter() {
-  return getRouterCoreContext(getCurrentComponentHost());
+export function useQuery() {
+  return getRouterCoreContext(getCurrentComponentHost())[QUERY];
 }
