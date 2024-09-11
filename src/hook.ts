@@ -1,17 +1,14 @@
-import type { GuardFn } from './common';
 import { getCurrentComponentHost } from 'jinge';
-import { QUERY, getRouterCoreContext } from './core/router';
-
-export const BEFORE_ROUTE_LEAVE = Symbol('beforeRouteLeaveCallback');
-
-export function beforeRouteLeave(guardFn: GuardFn) {
-  const el = getCurrentComponentHost() as unknown as {
-    [BEFORE_ROUTE_LEAVE]: GuardFn;
-  };
-  if (el[BEFORE_ROUTE_LEAVE]) throw new Error('duplicated beforeRouteLeave hook');
-  el[BEFORE_ROUTE_LEAVE] = guardFn;
-}
+import { PARAMS, QUERY, getRouteViewDeepContext, getRouterCoreContext } from './core/router';
+import type { RouteParams, RouteQuery } from './core/route';
 
 export function useQuery() {
-  return getRouterCoreContext(getCurrentComponentHost())[QUERY];
+  return getRouterCoreContext(getCurrentComponentHost())[QUERY] as RouteQuery;
+}
+
+export function useParams() {
+  const comp = getCurrentComponentHost();
+  const paramsList = getRouterCoreContext(comp)[PARAMS];
+  const viewDeep = getRouteViewDeepContext(comp);
+  return paramsList[viewDeep] as RouteParams;
 }

@@ -20,7 +20,11 @@ export function Router(this: ComponentHost, props: PropsWithSlots<RouterProps, J
   let { pathname, search } = location;
 
   addMountFn(this, () => {
-    updateLocation(core, pathname, search).catch((err) => console.error(err));
+    try {
+      updateLocation(core, pathname, search === '' ? undefined : search);
+    } catch (ex) {
+      console.error(ex);
+    }
     return registerEvent(window as unknown as HTMLElement, 'popstate', () => {
       const { pathname: pn, search: s } = location;
       if (pathname === pn) {
@@ -29,10 +33,12 @@ export function Router(this: ComponentHost, props: PropsWithSlots<RouterProps, J
         updateQuery(core, search);
       } else {
         pathname = pn;
+        try {
+          updateLocation(core, pn, search === s ? undefined : s);
+        } catch (ex) {
+          console.error(ex);
+        }
         search = s;
-        updateLocation(core, pn, search).catch((err) => {
-          console.error(err);
-        });
       }
     });
   });

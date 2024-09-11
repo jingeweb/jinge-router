@@ -43,16 +43,27 @@
 // } from './view';
 // import { RouteInfo } from './info';
 
-import { CONTEXT, type ComponentHost, VM_IGNORED, VM_RAW, type ViewModel, vm } from 'jinge';
+import {
+  CONTEXT,
+  type ComponentHost,
+  VM_IGNORED,
+  type ViewModel,
+  destroyComponent,
+  destroyViewModelCore,
+  vm,
+} from 'jinge';
 import { normPath } from './helper';
 import {
-  type GuardFn,
   type MatchedRoute,
+  type NormalRoute,
   type ParsedRoute,
   type Route,
+  type RouteParams,
+  type RouteQuery,
   matchRoutes,
   parseRoute,
 } from './route';
+import { renderView } from './view';
 
 export const ROUTER_CORE = Symbol('routerCore');
 export const ROUTE_VIEW_DEEP = Symbol('routeViewDeep');
@@ -243,8 +254,8 @@ export function getRouteViewDeepContext(comp: ComponentHost) {
 
 export interface RouterOptions {
   routes: Route[];
-  onBeforeEach?: GuardFn;
-  onAfterEach?: GuardFn;
+  // onBeforeEach?: GuardFn;
+  // onAfterEach?: GuardFn;
   baseHref?: string;
 }
 
@@ -253,30 +264,16 @@ export const BASE_HREF = Symbol('baseHref');
 export const QUERY = Symbol('query');
 export const ROUTES = Symbol('routes');
 export const MATCH_ROUTE = Symbol('matchRoute');
-
-function createQuery() {
-  const sp = new URLSearchParams();
-  const query = new Proxy(sp, {
-    get(target, p) {
-      if (p === VM_RAW) return undefined;
-      if (p === VM_IGNORED) return false;
-      return target.get(p as string);
-    },
-    set(target, p, v) {
-      target.set(p as string, v);
-      return true;
-    },
-  });
-  return vm(query); // 使用 vm 包裹后，业务层通过 useQuery() 拿到的 query 可以 watch 监听
-}
+export const PARAMS = Symbol('params');
 
 export interface RouterCore {
   [VM_IGNORED]: true;
   [CORE_VIEWS]: ComponentHost[];
   [BASE_HREF]: string;
-  [QUERY]: Record<string, string>;
+  [QUERY]: RouteQuery;
   [ROUTES]: ParsedRoute[];
   [MATCH_ROUTE]?: MatchedRoute[];
+  [PARAMS]: RouteParams[];
 }
 
 export function createRouter({ baseHref, routes }: RouterOptions) {
@@ -284,9 +281,9 @@ export function createRouter({ baseHref, routes }: RouterOptions) {
     [VM_IGNORED]: true,
     [CORE_VIEWS]: [],
     [BASE_HREF]: normPath(baseHref ?? '/'),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [QUERY]: createQuery() as any,
+    [QUERY]: vm({}),
     [ROUTES]: routes.map((routeDefine) => parseRoute(routeDefine)),
+    [PARAMS]: [],
   };
   return core;
 }
@@ -294,32 +291,85 @@ export function createRouter({ baseHref, routes }: RouterOptions) {
 export function updateQuery(core: RouterCore, search: string) {
   const newSp = new URLSearchParams(search);
   const query = core[QUERY] as ViewModel;
-  const oldSp = query[VM_RAW] as URLSearchParams;
-  for (const k of oldSp.keys()) {
+  for (const k of Object.keys(query)) {
     if (!newSp.has(k)) {
       query[k] = undefined; // 先将 query[k] 置为 undefined，触发 ViewModel 的变更及变更通知。
-      oldSp.delete(k);
+      delete query[k];
     } else {
       query[k] = newSp.get(k);
     }
   }
   for (const k of newSp.keys()) {
-    if (!oldSp.has(k)) {
+    if (!(k in query)) {
       query[k] = newSp.get(k);
     }
   }
 }
 
-export async function updateLocation(core: RouterCore, pathname: string, search: string) {
+export function updateLocation(core: RouterCore, pathname: string, search?: string) {
   pathname = normPath(pathname);
   const baseHref = core[BASE_HREF];
   if (baseHref !== '/' && pathname.startsWith(baseHref)) {
     pathname = pathname.substring(baseHref.length - 1);
   }
 
-  const matchedRoutePath = matchRoutes(pathname, core[ROUTES]);
-  const prevMatchedRoutePath = core[MATCH_ROUTE];
+  const matchedRoutePath = matchRoutes(pathname, core[ROUTES]) ?? [];
+  const matchedRoutePathLen = matchedRoutePath.length;
+  const prevMatchedRoutePath = core[MATCH_ROUTE] ?? [];
+  const prevMatchedRoutePathLen = prevMatchedRoutePath.length;
 
+  if (!matchedRoutePathLen && !prevMatchedRoutePathLen) {
+    return;
+  }
+
+  // if (views.length !== prevMatchedRoutePath.length + 1) throw new Error('assert-failed');
+
+  let x = -1;
+  for (let i = 0; i < prevMatchedRoutePathLen; i++) {
+    const pmp = prevMatchedRoutePath[i];
+    const mp = matchedRoutePath[i];
+    if (pmp[0][1] !== mp[0][1]) {
+      break;
+    }
+    x = i;
+    if (i >= matchedRoutePathLen) {
+      break;
+    }
+  }
+  const views = core[CORE_VIEWS];
+  for (let i = x + 1; i < prevMatchedRoutePathLen; i++) {
+    // 反过来，从深层级的 RouterView 到浅层级销毁。
+    const idx = prevMatchedRoutePathLen - 1 - i;
+    if (idx >= views.length) continue;
+    const view = views[idx];
+    destroyComponent(view);
+  }
+
+  search !== undefined && updateQuery(core, search);
+  const paramsList = core[PARAMS];
+
+  const dropParamsCount = paramsList.length - matchedRoutePathLen;
+  for (let i = 0; i < dropParamsCount; i++) {
+    destroyViewModelCore(paramsList.pop() as ViewModel);
+  }
+  let mergedParams: RouteParams = {};
+  for (let i = 0; i < matchedRoutePathLen; i++) {
+    mergedParams = { ...mergedParams, ...matchedRoutePath[i][1] };
+    if (i >= paramsList.length) {
+      paramsList.push(vm(mergedParams));
+    } else {
+      const vmParams = paramsList[i];
+      Object.entries(mergedParams).forEach(([k, v]) => {
+        vmParams[k] = v;
+      });
+    }
+  }
+  for (let i = x + 1; i < matchedRoutePathLen; i++) {
+    if (i >= views.length) break;
+    const view = views[i];
+    const route = matchedRoutePath[i][0][1];
+    renderView(view, (route as NormalRoute).component);
+  }
   // /**
   //  * 由于路由跳转是异步过程，期间会有多处异步等待。如果某个路由还在跳转的过程中，
   //  * 业务层又发起了新的路由跳转，则应该忽略之前的跳转。

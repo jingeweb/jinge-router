@@ -1,103 +1,38 @@
 import {
-  type AnyFn,
   CONTEXT,
   type ComponentHost,
-  DEFAULT_SLOT,
+  type FC,
   ROOT_NODES,
-  SLOTS,
   createComment,
-  createEle,
   createFragment,
-  destroyComponent,
-  getFirstDOM,
+  destroyComponentContent,
+  getLastDOM,
   handleRenderDone,
-  isComponent,
-  isFunction,
-  isObject,
+  insertBefore,
   newComponentWithDefaultSlot,
   renderFunctionComponent,
-  renderSlotFunction,
-  setAttribute,
 } from 'jinge';
-import type { GuardFn, MatchRoute } from '../common';
-import { BEFORE_ROUTE_LEAVE } from '../hook';
-import { CORE_VIEWS, ROUTER_CORE, type RouterCore } from './router';
+import { CORE_VIEWS, type RouterCore } from './router';
 
-export interface ViewNode {
-  name: string;
-  component: ComponentHost;
-  views: Map<string, ViewNode>;
-  doc: 'before' | 'after';
-}
+export function renderView(view: ComponentHost, fc?: FC) {
+  const lastEl = getLastDOM(view);
+  const $pa = lastEl.parentNode as Node;
+  const placeholder = createComment('router-view');
+  insertBefore($pa, placeholder, lastEl);
 
-export function getViewsToUpdate(
-  views: Map<string, ViewNode>,
-  resetLv: number,
-  curLv = 0,
-  viewsToUpdate: ViewNode[] = [],
-): ViewNode[] {
-  views.forEach((node) => {
-    if (curLv >= resetLv) {
-      viewsToUpdate.push(node);
-    } else if (node.views) {
-      getViewsToUpdate(node.views, resetLv, curLv + 1, viewsToUpdate);
-    }
-  });
-  return viewsToUpdate;
-}
-
-export function updateView(viewComponent: ComponentHost, routeMatchItem: MatchRoute) {
-  const roots = viewComponent[ROOT_NODES];
-  const oldEl = roots[0];
-  const oldIsComp = isComponent(oldEl);
-  const $el = oldIsComp ? getFirstDOM(oldEl) : (oldEl as unknown as Node);
-  const $pa = $el.parentNode as Node;
-  const removeOldEl = () => {
-    if (oldIsComp) {
-      destroyComponent(oldEl);
-    } else {
-      $pa.removeChild($el);
-    }
-  };
-
-  let fc: AnyFn | null = null;
-  if (routeMatchItem) {
-    fc = routeMatchItem.route.components[viewName];
-    if (!fc) {
-      console.warn(`Component of <router-view/> named "${viewName}" not provided.`);
-    }
-  }
+  destroyComponentContent(view);
   if (!fc) {
-    const newEl = createComment('router-view');
-    $pa.insertBefore(newEl, $el);
-    removeOldEl();
-    roots[0] = newEl;
+    view[ROOT_NODES].push(placeholder);
     return;
   }
 
-  const newEl = newComponentWithDefaultSlot(viewComponent[CONTEXT]);
+  const newEl = newComponentWithDefaultSlot(view[CONTEXT]);
   const nodes = renderFunctionComponent(newEl, fc);
 
-  $pa.insertBefore(nodes.length > 1 ? createFragment(nodes) : nodes[0], $el);
-  removeOldEl();
-  roots[0] = newEl;
+  $pa.insertBefore(nodes.length > 1 ? createFragment(nodes) : nodes[0], placeholder);
+  $pa.removeChild(placeholder);
+  view[ROOT_NODES].push(newEl);
   handleRenderDone(newEl);
-}
-
-export async function shouldUpdateView(view: ComponentHost, from: RouteInfo, to: RouteInfo) {
-  const el = view[ROOT_NODES][0];
-  if (!isComponent(el)) {
-    return true;
-  }
-  const fn = (
-    el as unknown as {
-      [BEFORE_ROUTE_LEAVE]: GuardFn<boolean | void>;
-    }
-  )[BEFORE_ROUTE_LEAVE];
-  if (isFunction(fn)) {
-    return await fn(from, to);
-  }
-  return true;
 }
 
 export function deregisterView(router: RouterCore, viewDeep: number) {
