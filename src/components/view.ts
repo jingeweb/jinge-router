@@ -26,3 +26,7 @@ export function RouterView(this: ComponentHost) {
   this[ROOT_NODES].push(placeholder);
   return this[ROOT_NODES];
 }
+
+// BEGIN_DROP_IN_PRODUCTION
+window.__JINGE_HMR__?.registerFunctionComponent(RouterView, 'jinge-router::router-view');
+// END_DROP_IN_PRODUCTION

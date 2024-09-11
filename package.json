@@ -2,9 +2,19 @@
   "name": "jinge-router",
   "version": "4.0.0",
   "description": "typed router for jinge web framework",
-  "main": "dist/index.js",
+  "main": "dist/jinge-router.js",
   "type": "module",
   "types": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/jinge-router.js"
+    },
+    "./source": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
   "scripts": {
     "lint-fix": "eslint '**/*.{js,mjs,ts}' --fix && prettier --log-level=warn --write . !*.yaml",
     "lint": "tsc --noEmit && eslint '**/*.{js,mjs,ts}' && prettier --check . !*.yaml",
@@ -25,8 +35,7 @@
     "jinge",
     "router",
     "mvvm router",
-    "web router",
-    "typed router"
+    "web router"
   ],
   "author": "Yuhang Ge <abeyuhang@gmail.com>",
   "license": "ISC",
@@ -35,20 +44,20 @@
   },
   "homepage": "https://github.com/jingeweb/jinge-router#readme",
   "dependencies": {
-    "path-to-regexp": "^8.0.0"
+    "path-to-regexp": "^8.1.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.9.1",
+    "@eslint/js": "^9.10.0",
     "@types/eslint__js": "^8.42.3",
-    "@types/node": "^22.5.2",
-    "eslint": "^9.9.1",
+    "@types/node": "^22.5.4",
+    "eslint": "^9.10.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import-x": "^4.1.1",
+    "eslint-plugin-import-x": "^4.2.1",
     "husky": "^9.1.5",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
-    "typescript": "^5.5.4",
-    "typescript-eslint": "^8.4.0",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.5.0",
     "vite": "^5.4.3"
   }
 }

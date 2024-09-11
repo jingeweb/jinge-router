@@ -2,14 +2,20 @@ import type { AnyObj, FC } from 'jinge';
 
 import { type PathSegment, parsePath } from './path';
 
+export type RouteParams = Record<string, string | number>;
+export type RouteQuery = Record<string, string>;
 interface Ctx {
-  params: Record<string, unknown>;
-  query: Record<string, unknown>;
-  data?: Record<string, unknown>;
+  params: RouteParams;
+  query: RouteQuery;
+  data?: AnyObj;
 }
-
-export type GuardFn<T = void> = (from: RouteInfo, to: RouteInfo) => void | T | Promise<void | T>;
+export interface RouteLoc extends Ctx {
+  route: Route;
+}
+export type GuardFn<T = void> = (from: RouteLoc, to: RouteLoc) => void | T | Promise<void | T>;
 interface BaseRoute {
+  /** 路由的唯一标识，没有特别的作用，仅用于比如 onBeforeEnter 这一类的守护回调可以更方便地识别是哪个路由。 */
+  id?: string;
   onAfterLeave?: GuardFn<boolean>;
   onBeforeEnter?: GuardFn;
   data?: AnyObj | ((ctx: Ctx) => AnyObj | Promise<AnyObj>);
@@ -61,7 +67,7 @@ export function parseRoute(routeDefine: Route) {
   return parsedRoute;
 }
 
-export type MatchedRoute = [ParsedRoute, Record<string, string | number>];
+export type MatchedRoute = [ParsedRoute, RouteParams, AnyObj | undefined];
 
 function getMatchRoutePath(
   pathSegs: string[],
@@ -71,7 +77,7 @@ function getMatchRoutePath(
   const [routeType, , routePathSegs, children] = route;
   if (!routePathSegs) return undefined;
   if (pathSegs.length - pi < routePathSegs.length) return undefined;
-  const params: Record<string, string | number> = {};
+  const params: RouteParams = {};
   for (const seg of routePathSegs) {
     const v = pathSegs[pi];
     if (seg.type === 'lit') {
@@ -88,14 +94,14 @@ function getMatchRoutePath(
     for (const childRoute of children!) {
       const childMatchedRoutePath = getMatchRoutePath(pathSegs, childRoute, pi);
       if (childMatchedRoutePath) {
-        return [[route, params], ...childMatchedRoutePath];
+        return [[route, params, undefined], ...childMatchedRoutePath];
       }
     }
     return undefined;
   } else if (pi !== pathSegs.length) {
     return undefined;
   } else {
-    return [[route, params]];
+    return [[route, params, undefined]];
   }
 }
 export function matchRoutes(pathname: string, routes: ParsedRoute[]) {
@@ -104,4 +110,5 @@ export function matchRoutes(pathname: string, routes: ParsedRoute[]) {
     const matchedRoutePath = getMatchRoutePath(segs, route, 0);
     if (matchedRoutePath) return matchedRoutePath;
   }
+  return undefined;
 }
