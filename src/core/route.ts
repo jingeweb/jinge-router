@@ -1,16 +1,10 @@
 import type { FC } from 'jinge';
 
-import { type PathSegment, parsePath } from './path';
+import { PATH_TYPE_ANY, PATH_TYPE_LIT, PATH_TYPE_NUM, type PathSegment, parsePath } from './path';
 
 export type RouteParams = Record<string, string | number>;
 export type RouteQuery = Record<string, string>;
-interface Ctx {
-  params: RouteParams;
-  query: RouteQuery;
-}
-export interface RouteLoc extends Ctx {
-  route: Route;
-}
+
 // export type GuardFn<T = void> = (from: RouteLoc, to: RouteLoc) => void | T | Promise<void | T>;
 interface BaseRoute {
   /** 路由的唯一标识，没有特别的作用，仅用于比如 onBeforeEnter 这一类的守护回调可以更方便地识别是哪个路由。 */
@@ -20,7 +14,7 @@ interface BaseRoute {
 }
 export interface RedirectRoute extends BaseRoute {
   path: string;
-  redirectTo: string | ((ctx: Ctx) => string);
+  redirectTo: string;
 }
 export type NormalRoute = BaseRoute & {
   path: string;
@@ -48,21 +42,44 @@ export type ParsedRoute = [
   ParsedRoute[] | undefined,
 ];
 
-export function parseRoute(routeDefine: Route) {
-  let routeType: 0 | 1 | 2 | 3 = ROUTE_TYPE_NORMAL;
-  if ((routeDefine as RedirectRoute).redirectTo) routeType = ROUTE_TYPE_REDIRECT;
-  else if ((routeDefine as NestRoute).children) routeType = ROUTE_TYPE_NEST;
-  else if (!(routeDefine as NormalRoute).path) routeType = ROUTE_TYPE_INDEX;
+function getRouteSortWeight(r: ParsedRoute) {
+  const path = r[2];
+  if (!path?.length) return 0;
+  const anyIdx = path.findIndex((p) => p.type === PATH_TYPE_ANY);
+  if (anyIdx < 0) return 1;
+  /** any(星号)越靠前的路由权重越大（理论上不可能有超过 0xffff 长度的路由），优先级越低，越放在后面去判定匹配。 */
+  return 0xffff - anyIdx;
+}
+export function parseRoutes(routeDefines: Route[]) {
+  let hasIndex = false;
+  const routes = routeDefines.map((routeDefine) => {
+    let routeType: 0 | 1 | 2 | 3 = ROUTE_TYPE_NORMAL;
+    if ((routeDefine as RedirectRoute).redirectTo) routeType = ROUTE_TYPE_REDIRECT;
+    else if ((routeDefine as NestRoute).children) routeType = ROUTE_TYPE_NEST;
+    else if (!(routeDefine as NormalRoute).path) {
+      if (hasIndex) throw new Error('Index 路由不能重复定义');
+      routeType = ROUTE_TYPE_INDEX;
+      hasIndex = true;
+    }
 
-  const parsedRoute: ParsedRoute = [
-    routeType,
-    routeDefine,
-    routeType === ROUTE_TYPE_INDEX ? undefined : parsePath((routeDefine as NormalRoute).path),
-    routeType === ROUTE_TYPE_NEST
-      ? (routeDefine as NestRoute).children.map((childRouteDefine) => parseRoute(childRouteDefine))
-      : undefined,
-  ];
-  return parsedRoute;
+    const parsedRoute: ParsedRoute = [
+      routeType,
+      routeDefine,
+      routeType === ROUTE_TYPE_INDEX
+        ? undefined
+        : parsePath((routeDefine as NormalRoute).path, routeType === ROUTE_TYPE_NEST),
+      routeType === ROUTE_TYPE_NEST ? parseRoutes((routeDefine as NestRoute).children) : undefined,
+    ];
+    return parsedRoute;
+  });
+
+  routes.sort((ra, rb) => {
+    const wa = getRouteSortWeight(ra);
+    const wb = getRouteSortWeight(rb);
+    return wa > wb ? 1 : wa < wb ? -1 : 0;
+  });
+  // console.log(routes);
+  return routes;
 }
 
 export type MatchedRoute = [ParsedRoute, RouteParams];
@@ -78,9 +95,12 @@ function getMatchRoutePath(
   const params: RouteParams = {};
   for (const seg of routePathSegs) {
     const v = pathSegs[pi];
-    if (seg.type === 'lit') {
+    if (seg.type === PATH_TYPE_ANY) {
+      // 星号直接匹配成功
+      return [[route, params]];
+    } else if (seg.type === PATH_TYPE_LIT) {
       if (seg.value !== v) return undefined;
-    } else if (seg.type === 'num') {
+    } else if (seg.type === PATH_TYPE_NUM) {
       if (!/^\d+$/.test(v)) return undefined;
       params[seg.value ?? ''] = parseInt(v);
     } else {
@@ -88,7 +108,7 @@ function getMatchRoutePath(
     }
     pi++;
   }
-  if (routeType === ROUTE_TYPE_NEST) {
+  if (routeType === ROUTE_TYPE_NEST && pi < pathSegs.length) {
     for (const childRoute of children!) {
       const childMatchedRoutePath = getMatchRoutePath(pathSegs, childRoute, pi);
       if (childMatchedRoutePath) {

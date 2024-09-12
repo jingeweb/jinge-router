@@ -27,6 +27,7 @@ export function Router(this: ComponentHost, props: PropsWithSlots<RouterProps, J
     }
     return registerEvent(window as unknown as HTMLElement, 'popstate', () => {
       const { pathname: pn, search: s } = location;
+      // console.log('popstate', pn, s, pathname, search);
       if (pathname === pn) {
         if (search === s) return; // nothing changed
         search = s;

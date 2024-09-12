@@ -19,7 +19,6 @@ export function renderView(view: ComponentHost, fc?: FC) {
   const $pa = lastEl.parentNode as Node;
   const placeholder = createComment('router-view');
   insertBefore($pa, placeholder, lastEl);
-
   destroyComponentContent(view);
   if (!fc) {
     view[ROOT_NODES].push(placeholder);
@@ -44,5 +43,4 @@ export function registerView(router: RouterCore, viewComponent: ComponentHost, v
   const views = router[CORE_VIEWS];
   if (viewDeep - 1 !== views.length) throw new Error('bad view deep');
   views.push(viewComponent);
-  // updateView(viewComponent, viewName, router.info.routePath[viewNamePath.length - 1]);
 }
