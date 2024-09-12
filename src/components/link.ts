@@ -69,6 +69,7 @@ export function RouterLink(
   });
   return renderSlotFunction(this, this[SLOTS][DEFAULT_SLOT], state);
 }
+
 // BEGIN_DROP_IN_PRODUCTION
 window.__JINGE_HMR__?.registerFunctionComponent(RouterLink, 'jinge-router::router-link');
 // END_DROP_IN_PRODUCTION

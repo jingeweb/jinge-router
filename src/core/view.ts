@@ -12,7 +12,9 @@ import {
   newComponentWithDefaultSlot,
   renderFunctionComponent,
 } from 'jinge';
-import { CORE_VIEWS, type RouterCore } from './router';
+import { CORE_VIEWS, MATCH_ROUTE, type RouterCore } from './router';
+import { type NestRoute, type NormalRoute, ROUTE_TYPE_NEST, ROUTE_TYPE_REDIRECT } from './route';
+import { RouterView } from '../components';
 
 export function renderView(view: ComponentHost, fc?: FC) {
   const lastEl = getLastDOM(view);
@@ -37,10 +39,21 @@ export function renderView(view: ComponentHost, fc?: FC) {
 export function deregisterView(router: RouterCore, viewDeep: number) {
   const views = router[CORE_VIEWS];
   views.splice(viewDeep - 1, views.length - viewDeep + 1);
+  // console.log(views);
 }
 
-export function registerView(router: RouterCore, viewComponent: ComponentHost, viewDeep: number) {
+export function registerView(router: RouterCore, view: ComponentHost, viewDeep: number) {
   const views = router[CORE_VIEWS];
   if (viewDeep - 1 !== views.length) throw new Error('bad view deep');
-  views.push(viewComponent);
+  views.push(view);
+  const matchedRoutePath = router[MATCH_ROUTE];
+  if (matchedRoutePath && matchedRoutePath.length > viewDeep - 1) {
+    const [routeType, routeDefine] = matchedRoutePath[viewDeep - 1][0];
+    if (routeType === ROUTE_TYPE_REDIRECT) throw new Error('assert-failed');
+    else if (routeType === ROUTE_TYPE_NEST) {
+      renderView(view, (routeDefine as NestRoute).component ?? RouterView);
+    } else {
+      renderView(view, (routeDefine as NormalRoute).component);
+    }
+  }
 }

@@ -18,13 +18,12 @@ export function Router(this: ComponentHost, props: PropsWithSlots<RouterProps, J
   const core = props.router;
   setComponentContext(this, ROUTER_CORE, core);
   let { pathname, search } = location;
-
+  try {
+    updateLocation(core, pathname, search === '' ? undefined : search);
+  } catch (ex) {
+    console.error(ex);
+  }
   addMountFn(this, () => {
-    try {
-      updateLocation(core, pathname, search === '' ? undefined : search);
-    } catch (ex) {
-      console.error(ex);
-    }
     return registerEvent(window as unknown as HTMLElement, 'popstate', () => {
       const { pathname: pn, search: s } = location;
       // console.log('popstate', pn, s, pathname, search);

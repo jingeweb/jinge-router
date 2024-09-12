@@ -52,7 +52,7 @@ import {
   destroyViewModelCore,
   vm,
 } from 'jinge';
-import { normPath } from './helper';
+import { normPath, updateHistoryState } from './helper';
 import {
   type MatchedRoute,
   type NestRoute,
@@ -144,7 +144,8 @@ export function updateLocation(core: RouterCore, pathname: string, search?: stri
     pathname = pathname.substring(baseHref.length - 1);
   }
 
-  const matchedRoutePath = matchRoutes(pathname, core[ROUTES]) ?? [];
+  const pathnameSegs = pathname.split('/').slice(1); // pathname 一定以 / 打头，去掉第一个 ''
+  const matchedRoutePath = matchRoutes(pathnameSegs, core[ROUTES]) ?? [];
   let matchedRoutePathLen = matchedRoutePath.length;
   const prevMatchedRoutePath = core[MATCH_ROUTE] ?? [];
   const prevMatchedRoutePathLen = prevMatchedRoutePath.length;
@@ -155,10 +156,14 @@ export function updateLocation(core: RouterCore, pathname: string, search?: stri
     const [routeType, routeDefine, , children] = matchedRoutePath[matchedRoutePathLen - 1][0];
     if (routeType === ROUTE_TYPE_REDIRECT) {
       /** 如果匹配的路由的最后一个是 redirect 路由，直接跳转到目标。 */
-      history.replaceState(null, '', (routeDefine as RedirectRoute).redirectTo);
-      setImmediate(() => dispatchEvent(new PopStateEvent('popstate')));
+      updateHistoryState((routeDefine as RedirectRoute).redirectTo, true);
       return; // important!!
     } else if (routeType === ROUTE_TYPE_NEST) {
+      const redirectTo = (routeDefine as NestRoute).redirectChild;
+      if (redirectTo) {
+        updateHistoryState(normPath(`${pathname}/${redirectTo}`), true);
+        return;
+      }
       // 如果匹配的路由是嵌套路由，且 children 第一个是 Index 路由，则将 Index 添加到匹配，接下来渲染。
       // 注意 parseRoutes 函数会排序，保证 Index 路由如果有一定是第一个。
       const firstChild = children?.[0];
@@ -168,7 +173,6 @@ export function updateLocation(core: RouterCore, pathname: string, search?: stri
       }
     }
   }
-
   core[MATCH_ROUTE] = matchedRoutePath;
 
   let x = -1;
@@ -183,11 +187,12 @@ export function updateLocation(core: RouterCore, pathname: string, search?: stri
     }
     x = i;
   }
+  // console.log(x, prevMatchedRoutePath, matchedRoutePathLen);
   const views = core[CORE_VIEWS];
   for (let i = x + 1; i < prevMatchedRoutePathLen; i++) {
     // 反过来，从深层级的 RouterView 到浅层级销毁。
     const idx = prevMatchedRoutePathLen - 1 - i;
-    if (idx >= views.length - 1) continue;
+    if (idx === 0 || idx >= views.length - 1) continue;
     const view = views[idx];
     destroyComponent(view);
   }
@@ -212,18 +217,19 @@ export function updateLocation(core: RouterCore, pathname: string, search?: stri
     }
   }
 
-  if (!matchedRoutePathLen) {
+  if (!matchedRoutePathLen && views.length > 0) {
     renderView(views[0]);
+    return;
   }
-  for (let i = x + 1; i < matchedRoutePathLen; i++) {
-    if (i >= views.length) break;
-    const view = views[i];
-    const [routeType, routeDefine] = matchedRoutePath[i][0];
-    if (routeType === ROUTE_TYPE_REDIRECT) throw new Error('assert-failed');
-    else if (routeType === ROUTE_TYPE_NEST) {
-      renderView(view, (routeDefine as NestRoute).component ?? RouterView);
-    } else {
-      renderView(view, (routeDefine as NormalRoute).component);
-    }
+  if (x + 1 >= views.length) {
+    return;
+  }
+  const view = views[x + 1];
+  const [routeType, routeDefine] = matchedRoutePath[x + 1][0];
+  if (routeType === ROUTE_TYPE_REDIRECT) throw new Error('assert-failed');
+  else if (routeType === ROUTE_TYPE_NEST) {
+    renderView(view, (routeDefine as NestRoute).component ?? RouterView);
+  } else {
+    renderView(view, (routeDefine as NormalRoute).component);
   }
 }

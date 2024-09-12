@@ -1,4 +1,5 @@
 import { isNumber } from '../../../jinge/src/util';
+import { updateHistoryState } from './helper';
 import type { RouterCore } from './router';
 
 export function navigateRouter(
@@ -12,16 +13,10 @@ export function navigateRouter(
     history.go(to);
     return;
   }
-  const replace = !!options?.replace;
   let href = to;
   if (to === '..') {
     // todo
     href = '/';
   }
-  if (replace) {
-    history.replaceState(null, '', href);
-  } else {
-    history.pushState(null, '', href);
-  }
-  dispatchEvent(new PopStateEvent('popstate'));
+  updateHistoryState(href, options?.replace);
 }

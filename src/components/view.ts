@@ -10,16 +10,15 @@ import { ROUTE_VIEW_DEEP, getRouteViewDeepContext, getRouterCoreContext } from '
 import { deregisterView, registerView } from '../core/view';
 
 export function RouterView(this: ComponentHost) {
-  const router = getRouterCoreContext(this);
+  const core = getRouterCoreContext(this);
   const viewDeep = getRouteViewDeepContext(this) + 1;
   setComponentContext(this, ROUTE_VIEW_DEEP, viewDeep);
 
   addMountFn(this, () => {
-    registerView(router, this, viewDeep);
+    registerView(core, this, viewDeep);
   });
-
   addUnmountFn(this, () => {
-    deregisterView(router, viewDeep);
+    deregisterView(core, viewDeep);
   });
 
   const placeholder = createComment('router-view');

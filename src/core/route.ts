@@ -26,6 +26,7 @@ export type IndexRoute = BaseRoute & {
 export type NestRoute = BaseRoute & {
   path: string;
   component?: FC;
+  redirectChild?: string;
   children: Route[];
 };
 export type Route = NormalRoute | RedirectRoute | IndexRoute | NestRoute;
@@ -122,10 +123,9 @@ function getMatchRoutePath(
     return [[route, params]];
   }
 }
-export function matchRoutes(pathname: string, routes: ParsedRoute[]) {
-  const segs = pathname.split('/').slice(1); // pathname 一定以 / 打头，去掉第一个 ''
+export function matchRoutes(pathSegs: string[], routes: ParsedRoute[]) {
   for (const route of routes) {
-    const matchedRoutePath = getMatchRoutePath(segs, route, 0);
+    const matchedRoutePath = getMatchRoutePath(pathSegs, route, 0);
     if (matchedRoutePath) return matchedRoutePath;
   }
   return undefined;
