@@ -1,12 +1,9 @@
 import {
   type ComponentHost,
-  DEFAULT_SLOT,
   type JNode,
   type PropsWithSlots,
-  SLOTS,
   addMountFn,
   registerEvent,
-  renderSlotFunction,
   setComponentContext,
 } from 'jinge';
 import { ROUTER_CORE, type RouterCore, updateLocation, updateQuery } from '../core/router';
@@ -43,9 +40,5 @@ export function Router(this: ComponentHost, props: PropsWithSlots<RouterProps, J
     });
   });
 
-  return renderSlotFunction(this, this[SLOTS][DEFAULT_SLOT]);
+  return <>{props.children}</>;
 }
-
-// BEGIN_DROP_IN_PRODUCTION
-window.__JINGE_HMR__?.registerFunctionComponent(Router, 'jinge-router::router');
-// END_DROP_IN_PRODUCTION

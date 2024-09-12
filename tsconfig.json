@@ -10,7 +10,5 @@
     "strict": true,
     "jsx": "preserve"
   },
-  "include": [
-    "src/**/*", "scripts/**/*", "*.js", "*.mjs"
-  ]
+  "include": ["src/**/*", "scripts/**/*", "*.js", "*.mjs"]
 }

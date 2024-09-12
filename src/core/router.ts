@@ -1,48 +1,3 @@
-// import {
-//   type AnyFn,
-//   CONTEXT,
-//   type ComponentHost,
-//   type DeregisterFn,
-//   UPDATE_RENDER,
-//   VM_IGNORED,
-//   arrayPushIfNotExist,
-//   arrayRemove,
-//   isComponent,
-//   isFunction,
-//   isObject,
-//   isString,
-//   registerEvent,
-//   vm,
-// } from 'jinge';
-// import { compile, match } from 'path-to-regexp';
-// import type {
-//   GuardFn,
-//   LinkTarget,
-//   LoadRouteLocationFn,
-//   MatchRoute,
-//   Route,
-//   RouteInstance,
-//   RouteLocation,
-// } from '../common';
-// import { cloneParamsOrQuery, encodeParamsOrQuery, isParamsOrQuerySameOrInclude } from '../util';
-// import {
-//   addGuard,
-//   addRoute,
-//   getPathnameAndSearch,
-//   matchRoutePath,
-//   normPath,
-//   parseQuery,
-//   rollback,
-// } from './helper';
-// import {
-//   type ViewNode,
-//   prepareUpdateView,
-//   shouldUpdateView,
-//   updateErrView,
-//   updateView,
-// } from './view';
-// import { RouteInfo } from './info';
-
 import {
   CONTEXT,
   type ComponentHost,
@@ -95,6 +50,7 @@ export const QUERY = Symbol('query');
 export const ROUTES = Symbol('routes');
 export const MATCH_ROUTE = Symbol('matchRoute');
 export const PARAMS = Symbol('params');
+export const ON_CHANGE = Symbol('onChange');
 
 export interface RouterCore {
   [VM_IGNORED]: true;
@@ -104,6 +60,7 @@ export interface RouterCore {
   [ROUTES]: ParsedRoute[];
   [MATCH_ROUTE]?: MatchedRoute[];
   [PARAMS]: RouteParams[];
+  [ON_CHANGE]: Set<(matchedRoutePath: MatchedRoute[]) => void>;
 }
 
 export function createRouter({ baseHref, routes }: RouterOptions) {
@@ -114,6 +71,7 @@ export function createRouter({ baseHref, routes }: RouterOptions) {
     [QUERY]: vm({}),
     [ROUTES]: parseRoutes(routes),
     [PARAMS]: [],
+    [ON_CHANGE]: new Set(),
   };
   // console.log(core);
   return core;
@@ -144,8 +102,7 @@ export function updateLocation(core: RouterCore, pathname: string, search?: stri
     pathname = pathname.substring(baseHref.length - 1);
   }
 
-  const pathnameSegs = pathname.split('/').slice(1); // pathname 一定以 / 打头，去掉第一个 ''
-  const matchedRoutePath = matchRoutes(pathnameSegs, core[ROUTES]) ?? [];
+  const matchedRoutePath = matchRoutes(pathname, core[ROUTES]) ?? [];
   let matchedRoutePathLen = matchedRoutePath.length;
   const prevMatchedRoutePath = core[MATCH_ROUTE] ?? [];
   const prevMatchedRoutePathLen = prevMatchedRoutePath.length;
@@ -216,6 +173,8 @@ export function updateLocation(core: RouterCore, pathname: string, search?: stri
       });
     }
   }
+
+  core[ON_CHANGE].forEach((fn) => fn(matchedRoutePath));
 
   if (!matchedRoutePathLen && views.length > 0) {
     renderView(views[0]);

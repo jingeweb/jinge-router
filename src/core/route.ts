@@ -123,9 +123,10 @@ function getMatchRoutePath(
     return [[route, params]];
   }
 }
-export function matchRoutes(pathSegs: string[], routes: ParsedRoute[]) {
+export function matchRoutes(pathname: string, routes: ParsedRoute[]) {
+  const pathnameSegs = pathname.split('/').slice(1); // pathname 一定以 / 打头，去掉第一个 ''
   for (const route of routes) {
-    const matchedRoutePath = getMatchRoutePath(pathSegs, route, 0);
+    const matchedRoutePath = getMatchRoutePath(pathnameSegs, route, 0);
     if (matchedRoutePath) return matchedRoutePath;
   }
   return undefined;
