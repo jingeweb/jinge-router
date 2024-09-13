@@ -1,7 +1,9 @@
 # jinge-router
 
-> simple router for jinge mvvm framework
+> 为 jinge mvvm 框架实现的轻量路由
 
-[中文](./README_zh-cn.md) | English
+[English Readme](./README_en.md)
 
-TODO: Translate Chinese README_zh-cn.md to English.
+## Usage
+
+## Demo
