@@ -1,16 +1,17 @@
-import { resolve } from 'node:path';
-import { promises as fs } from 'node:fs';
 import { defineConfig } from 'vite';
 import { jingeVitePlugin } from 'jinge-compiler';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 
 const PROD = process.env.NODE_ENV === 'production';
+
 export default defineConfig({
   plugins: PROD
     ? [
         {
           name: 'PLUGIN',
           load(id) {
-            return fs.readFile(id, 'utf-8').then((res) => {
+            return readFile(id, 'utf-8').then((res) => {
               return (
                 res
                   // BEGIN_DROP_IN_PRODUCTION 和 END_DROP_IN_PRODUCTION 之间的代码会在构建 production 版本时删除。
@@ -28,7 +29,7 @@ export default defineConfig({
     emptyOutDir: false,
     sourcemap: true,
     rollupOptions: {
-      external: 'jinge',
+      external: ['jinge'],
       output: {
         entryFileNames: `jinge-router.${PROD ? 'prod' : 'dev'}.js`,
       },

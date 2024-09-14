@@ -1,10 +1,10 @@
 {
   "name": "jinge-router",
-  "version": "4.0.0",
+  "version": "4.0.0-alpha.1",
   "description": "lightweight router for jinge web framework",
-  "type": "module",
   "main": "dist/jinge-router.prod.js",
-  "module": "./dist/jinge-router.prod.js",
+  "module": "dist/jinge-router.prod.js",
+  "type": "module",
   "types": "src/index.ts",
   "exports": {
     ".": {
@@ -51,9 +51,6 @@
     "url": "https://github.com/jingeweb/jinge-router/issues"
   },
   "homepage": "https://github.com/jingeweb/jinge-router#readme",
-  "dependencies": {
-    "path-to-regexp": "^8.1.0"
-  },
   "devDependencies": {
     "@eslint/js": "^9.10.0",
     "@types/eslint__js": "^8.42.3",
@@ -62,6 +59,8 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import-x": "^4.2.1",
     "husky": "^9.1.6",
+    "jinge": "4.0.0-alpha.2",
+    "jinge-compiler": "4.0.0-alpha.3",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
     "typescript": "^5.6.2",
