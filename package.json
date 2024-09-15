@@ -1,6 +1,6 @@
 {
   "name": "jinge-router",
-  "version": "4.0.0-alpha.1",
+  "version": "4.0.0-alpha.2",
   "description": "lightweight router for jinge web framework",
   "main": "dist/jinge-router.prod.js",
   "module": "dist/jinge-router.prod.js",

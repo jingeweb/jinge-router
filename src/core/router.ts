@@ -39,6 +39,7 @@ export function getRouteViewDeepContext(comp: ComponentHost) {
 
 export interface RouterOptions {
   routes: Route[];
+  mode?: 'hash' | 'html5';
   // onBeforeEach?: GuardFn;
   // onAfterEach?: GuardFn;
   baseHref?: string;
@@ -51,6 +52,7 @@ export const ROUTES = Symbol('routes');
 export const MATCH_ROUTE = Symbol('matchRoute');
 export const PARAMS = Symbol('params');
 export const ON_CHANGE = Symbol('onChange');
+export const MODE = Symbol('mode');
 
 export interface RouterCore {
   [VM_IGNORED]: true;
@@ -61,9 +63,10 @@ export interface RouterCore {
   [MATCH_ROUTE]?: MatchedRoute[];
   [PARAMS]: RouteParams[];
   [ON_CHANGE]: Set<(matchedRoutePath: MatchedRoute[]) => void>;
+  [MODE]: 'html5' | 'hash';
 }
 
-export function createRouter({ baseHref, routes }: RouterOptions) {
+export function createRouter({ baseHref, routes, mode }: RouterOptions) {
   const core: RouterCore = {
     [VM_IGNORED]: true,
     [CORE_VIEWS]: [],
@@ -72,6 +75,7 @@ export function createRouter({ baseHref, routes }: RouterOptions) {
     [ROUTES]: parseRoutes(routes),
     [PARAMS]: [],
     [ON_CHANGE]: new Set(),
+    [MODE]: mode ?? 'html5',
   };
   // console.log(core);
   return core;
@@ -109,16 +113,18 @@ export function updateLocation(core: RouterCore, pathname: string, search?: stri
   if (!matchedRoutePathLen && !prevMatchedRoutePathLen) {
     return;
   }
+
+  const hashPrefix = core[MODE] === 'hash' ? '#' : '';
   if (matchedRoutePathLen > 0) {
     const [routeType, routeDefine, , children] = matchedRoutePath[matchedRoutePathLen - 1][0];
     if (routeType === ROUTE_TYPE_REDIRECT) {
       /** 如果匹配的路由的最后一个是 redirect 路由，直接跳转到目标。 */
-      updateHistoryState((routeDefine as RedirectRoute).redirectTo, true);
+      updateHistoryState(hashPrefix + (routeDefine as RedirectRoute).redirectTo, true);
       return; // important!!
     } else if (routeType === ROUTE_TYPE_NEST) {
       const redirectTo = (routeDefine as NestRoute).redirectChild;
       if (redirectTo) {
-        updateHistoryState(normPath(`${pathname}/${redirectTo}`), true);
+        updateHistoryState(hashPrefix + normPath(`${pathname}/${redirectTo}`), true);
         return;
       }
       // 如果匹配的路由是嵌套路由，且 children 第一个是 Index 路由，则将 Index 添加到匹配，接下来渲染。

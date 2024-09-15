@@ -6,7 +6,7 @@ import {
   registerEvent,
   setComponentContext,
 } from 'jinge';
-import { ROUTER_CORE, type RouterCore, updateLocation, updateQuery } from '../core/router';
+import { MODE, ROUTER_CORE, type RouterCore, updateLocation, updateQuery } from '../core/router';
 
 export interface RouterProps {
   router: RouterCore;
@@ -14,7 +14,8 @@ export interface RouterProps {
 export function Router(this: ComponentHost, props: PropsWithSlots<RouterProps, JNode>) {
   const core = props.router;
   setComponentContext(this, ROUTER_CORE, core);
-  let { pathname, search } = location;
+  let search = location.search;
+  let pathname = core[MODE] === 'hash' ? location.hash : location.pathname;
   try {
     updateLocation(core, pathname, search === '' ? undefined : search);
   } catch (ex) {
@@ -22,16 +23,17 @@ export function Router(this: ComponentHost, props: PropsWithSlots<RouterProps, J
   }
   addMountFn(this, () => {
     return registerEvent(window as unknown as HTMLElement, 'popstate', () => {
-      const { pathname: pn, search: s } = location;
+      const s = location.search;
+      const p = core[MODE] === 'hash' ? location.hash : location.pathname;
       // console.log('popstate', pn, s, pathname, search);
-      if (pathname === pn) {
+      if (pathname === p) {
         if (search === s) return; // nothing changed
         search = s;
         updateQuery(core, search);
       } else {
-        pathname = pn;
+        pathname = p;
         try {
-          updateLocation(core, pn, search === s ? undefined : s);
+          updateLocation(core, p, search === s ? undefined : s);
         } catch (ex) {
           console.error(ex);
         }
