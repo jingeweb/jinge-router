@@ -23,7 +23,7 @@ export function RouterView(this: ComponentHost) {
 
   const placeholder = createComment('router-view');
   this[ROOT_NODES].push(placeholder);
-  return this[ROOT_NODES];
+  return this[ROOT_NODES] as Node[];
 }
 
 // BEGIN_DROP_IN_PRODUCTION

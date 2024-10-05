@@ -12,7 +12,14 @@ export function RouterHref(props: PropsWithSlots<RouterHrefProps, JNode>) {
   return (
     <RouterLink to={props.to} noActive={noActive}>
       {(vm) => (
-        <a className={cx(props.className, vm.active && props.activeClass, vm.exactActive && props.exactActiveClass)} href={vm.href}>
+        <a
+          className={cx(
+            props.className,
+            vm.active && props.activeClass,
+            vm.exactActive && props.exactActiveClass,
+          )}
+          href={vm.href}
+        >
           {props.children}
         </a>
       )}

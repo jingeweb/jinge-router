@@ -45,11 +45,14 @@ function isParamsSame(pa: RouteParams, pb: RouteParams) {
   const kb = Object.keys(pb);
   if (ka.length === 0) return kb.length === 0;
   else if (ka.length !== kb.length) return false;
-  return !ka.some(key => {
-    return pa[key] !== pb[key]
+  return !ka.some((key) => {
+    return pa[key] !== pb[key];
   });
 }
-export function RouterLink(this: ComponentHost, props: PropsWithSlots<RouterLinkProps, (vm: RouterLinkState) => JNode>) {
+export function RouterLink(
+  this: ComponentHost,
+  props: PropsWithSlots<RouterLinkProps, (vm: RouterLinkState) => JNode>,
+) {
   const core = getRouterCoreContext(this);
 
   const state = vm({
@@ -111,15 +114,11 @@ export function RouterLink(this: ComponentHost, props: PropsWithSlots<RouterLink
 
     const onChange = (matchRoutePath: MatchedRoute[]) => {
       update(matchRoutePath);
-    }
+    };
     core[ON_CHANGE].add(onChange);
     addUnmountFn(this, () => {
       core[ON_CHANGE].delete(onChange);
     });
   }
-  return (
-    <>
-      {props.children({ ...state })}
-    </>
-  );
+  return <>{props.children({ ...state })}</>;
 }
