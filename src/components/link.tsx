@@ -1,7 +1,7 @@
 import {
   type ComponentHost,
   type JNode,
-  type PropsWithSlots,
+  type Props,
   addMountFn,
   addUnmountFn,
   getFirstDOM,
@@ -51,7 +51,10 @@ function isParamsSame(pa: RouteParams, pb: RouteParams) {
 }
 export function RouterLink(
   this: ComponentHost,
-  props: PropsWithSlots<RouterLinkProps, (vm: RouterLinkState) => JNode>,
+  props: Props<{
+    props: RouterLinkProps;
+    children: (vm: RouterLinkState) => JNode;
+  }>,
 ) {
   const core = getRouterCoreContext(this);
 

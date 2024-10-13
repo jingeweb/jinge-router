@@ -1,4 +1,4 @@
-import { type JNode, type PropsWithSlots, cx, isUndefined } from 'jinge';
+import { type JNode, type Props, cx, isUndefined } from 'jinge';
 import { RouterLink, type RouterLinkProps } from './link';
 
 export interface RouterHrefProps {
@@ -7,7 +7,12 @@ export interface RouterHrefProps {
   exactActiveClass?: string;
   className?: string;
 }
-export function RouterHref(props: PropsWithSlots<RouterHrefProps, JNode>) {
+export function RouterHref(
+  props: Props<{
+    props: RouterHrefProps;
+    children: JNode;
+  }>,
+) {
   const noActive = isUndefined(props.activeClass);
   return (
     <RouterLink to={props.to} noActive={noActive}>
