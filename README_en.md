@@ -4,7 +4,7 @@
 
 切换路由的时候，由于加载 resolves 和 component 可以是异步的，这个过程会产生等待，也可能会出现错误。`jinge-router` 允许指定如何渲染加载状态，以及如何提示错误。
 
-````html
+```html
 <router-view>
   <div slot-pass:default>loading</div>
   <_slot slot-pass:error vm-use:error>
@@ -12,4 +12,4 @@
     <p>${error}</p>
   </_slot>
 </router-view>
-````
+```
