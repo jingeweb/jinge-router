@@ -50,3 +50,6 @@ export function Router(
 
   return <>{props.children}</>;
 }
+// BEGIN_DROP_IN_PRODUCTION
+window.__JINGE_HMR__?.registerFunctionComponent(Router, 'jinge-router::router');
+// END_DROP_IN_PRODUCTION

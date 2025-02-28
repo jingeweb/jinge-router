@@ -1,6 +1,6 @@
 {
   "name": "jinge-router",
-  "version": "4.0.0-alpha.6",
+  "version": "4.0.0-alpha.8",
   "description": "lightweight router for jinge web framework",
   "main": "dist/jinge-router.prod.js",
   "module": "dist/jinge-router.prod.js",
@@ -58,7 +58,7 @@
     "eslint-config-prettier": "^10.0.2",
     "eslint-plugin-import-x": "^4.6.1",
     "husky": "^9.1.7",
-    "jinge": "4.0.0-alpha.14",
+    "jinge": "4.0.0-alpha.15",
     "jinge-compiler": "4.0.0-alpha.15",
     "lint-staged": "^15.4.3",
     "prettier": "^3.5.2",

@@ -27,8 +27,8 @@ importers:
         specifier: ^9.1.7
         version: 9.1.7
       jinge:
-        specifier: 4.0.0-alpha.14
-        version: 4.0.0-alpha.14
+        specifier: 4.0.0-alpha.15
+        version: 4.0.0-alpha.15
       jinge-compiler:
         specifier: 4.0.0-alpha.15
         version: 4.0.0-alpha.15
@@ -778,8 +778,8 @@ packages:
     resolution: {integrity: sha512-0eDAGzT+2WYhMTLCuOhTUZPmnbIM/Ag/V/pwn6++Jx5ShnYNzaQtWdoHJEn8yOZ86LL3/EuPcevHFXdZOKdhRA==}
     hasBin: true
 
-  jinge@4.0.0-alpha.14:
-    resolution: {integrity: sha512-AdJNncoA4WFMS6RFT5+3ob173KA5BA8+VivBlfp9JkIfSW0ys7QDwaT57bMO2JTPiwS9zWbE9OzdmVz2MWoKEA==}
+  jinge@4.0.0-alpha.15:
+    resolution: {integrity: sha512-OynRA6ZH3XWIRwSiiQXoeJjCdGfNYD4WJ7zEKH8d7t1Waqa7nvC009MhuLI76HfqQ6zrOVDXUvguWO+4GaVmwg==}
 
   js-yaml@4.1.0:
     resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
@@ -1787,7 +1787,7 @@ snapshots:
       jinge-compiler-core-macos-x86_64: 4.0.0-alpha.15
       jinge-compiler-core-windows-x86_64: 4.0.0-alpha.15
 
-  jinge@4.0.0-alpha.14: {}
+  jinge@4.0.0-alpha.15: {}
 
   js-yaml@4.1.0:
     dependencies:

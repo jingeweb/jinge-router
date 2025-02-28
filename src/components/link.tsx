@@ -125,3 +125,6 @@ export function RouterLink(
   }
   return <>{props.children({ ...state })}</>;
 }
+// BEGIN_DROP_IN_PRODUCTION
+window.__JINGE_HMR__?.registerFunctionComponent(RouterLink, 'jinge-router::router-link');
+// END_DROP_IN_PRODUCTION
