@@ -1,4 +1,4 @@
-import { isNumber } from '../../../jinge/src/util';
+import { isNumber } from 'jinge';
 import { updateHistoryState } from './helper';
 import { MODE, type RouterCore } from './router';
 
