@@ -50,22 +50,22 @@ function isParamsSame(pa: RouteParams, pb: RouteParams) {
   });
 }
 export function RouterLink(
-  this: ComponentHost,
-  props: Props<{
+   props: Props<{
     props: RouterLinkProps;
     children: (vm: RouterLinkState) => JNode;
   }>,
+  host: ComponentHost
 ) {
-  const core = getRouterCoreContext(this);
+  const core = getRouterCoreContext(host);
 
   const state = vm({
     href: props.to,
     active: false,
     exactActive: false,
   });
-  addMountFn(this, () => {
+  addMountFn(host, () => {
     if (props.noEvent) return;
-    const el = getFirstDOM(this);
+    const el = getFirstDOM(host);
     if (el.nodeType !== 1) return;
     return registerEvent(el as Element, 'click', (evt) => {
       evt.preventDefault();
@@ -107,7 +107,7 @@ export function RouterLink(
     update(core[MATCH_ROUTE]); // init calc
 
     addUnmountFn(
-      this,
+      host,
       vmWatch(props, 'to', (v) => {
         state.href = props.to;
         toRoutePath = matchRoutes(v, core[ROUTES]);
@@ -119,7 +119,7 @@ export function RouterLink(
       update(matchRoutePath);
     };
     core[ON_CHANGE].add(onChange);
-    addUnmountFn(this, () => {
+    addUnmountFn(host, () => {
       core[ON_CHANGE].delete(onChange);
     });
   }

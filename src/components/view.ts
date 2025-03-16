@@ -9,21 +9,21 @@ import {
 import { ROUTE_VIEW_DEEP, getRouteViewDeepContext, getRouterCoreContext } from '../core/router';
 import { deregisterView, registerView } from '../core/view';
 
-export function RouterView(this: ComponentHost) {
-  const core = getRouterCoreContext(this);
-  const viewDeep = getRouteViewDeepContext(this) + 1;
-  setComponentContext(this, ROUTE_VIEW_DEEP, viewDeep);
+export function RouterView(_: unknown, host: ComponentHost) {
+  const core = getRouterCoreContext(host);
+  const viewDeep = getRouteViewDeepContext(host) + 1;
+  setComponentContext(host, ROUTE_VIEW_DEEP, viewDeep);
 
-  addMountFn(this, () => {
-    registerView(core, this, viewDeep);
+  addMountFn(host, () => {
+    registerView(core, host, viewDeep);
   });
-  addUnmountFn(this, () => {
+  addUnmountFn(host, () => {
     deregisterView(core, viewDeep);
   });
 
   const placeholder = createComment('router-view');
-  this[ROOT_NODES].push(placeholder);
-  return this[ROOT_NODES] as Node[];
+  host[ROOT_NODES].push(placeholder);
+  return host[ROOT_NODES] as Node[];
 }
 
 // BEGIN_DROP_IN_PRODUCTION

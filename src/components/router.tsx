@@ -12,14 +12,14 @@ export interface RouterProps {
   router: RouterCore;
 }
 export function Router(
-  this: ComponentHost,
   props: Props<{
     props: RouterProps;
     children: JNode;
   }>,
+  host: ComponentHost
 ) {
   const core = props.router;
-  setComponentContext(this, ROUTER_CORE, core);
+  setComponentContext(host, ROUTER_CORE, core);
   let search = location.search;
   let pathname = core[MODE] === 'hash' ? location.hash : location.pathname;
   try {
@@ -27,7 +27,7 @@ export function Router(
   } catch (ex) {
     console.error(ex);
   }
-  addMountFn(this, () => {
+  addMountFn(host, () => {
     return registerEvent(window as unknown as HTMLElement, 'popstate', () => {
       const s = location.search;
       const p = core[MODE] === 'hash' ? location.hash : location.pathname;
