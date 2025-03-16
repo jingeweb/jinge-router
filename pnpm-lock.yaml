@@ -21,17 +21,17 @@ importers:
         specifier: ^10.1.1
         version: 10.1.1(eslint@9.22.0)
       eslint-plugin-import-x:
-        specifier: ^4.7.2
-        version: 4.7.2(eslint@9.22.0)(typescript@5.8.2)
+        specifier: ^4.8.0
+        version: 4.8.0(eslint@9.22.0)(typescript@5.8.2)
       husky:
         specifier: ^9.1.7
         version: 9.1.7
       jinge:
-        specifier: ^4.0.1
-        version: 4.0.1
+        specifier: ^4.0.3
+        version: 4.0.3
       jinge-compiler:
-        specifier: ^4.0.2
-        version: 4.0.2
+        specifier: ^4.0.5
+        version: 4.0.5
       lint-staged:
         specifier: ^15.5.0
         version: 15.5.0
@@ -646,8 +646,8 @@ packages:
   eslint-import-resolver-node@0.3.9:
     resolution: {integrity: sha512-WFj2isz22JahUv+B788TlO3N6zL3nNJGU8CcZbPZvVEkBPaJdCV4vy5wyghty5ROFbCRnm132v8BScu5/1BQ8g==}
 
-  eslint-plugin-import-x@4.7.2:
-    resolution: {integrity: sha512-+GpGWKbQMK3izrwU4XoRGdAJHwvxuboiNusqU25nNXlRsmnxj8B5niQRuFK1aHEvcbIKE6D9ZfwjsLmBQbnJmw==}
+  eslint-plugin-import-x@4.8.0:
+    resolution: {integrity: sha512-rCZftKo2QvFfV62MomJuIog74NrsfdEriJZxcNPEnjwrHpfHge6ZfUe+Pp2f4pqZe+ArtH8RapwqxLc1O+KJYw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0
@@ -830,27 +830,27 @@ packages:
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
-  jinge-compiler-core-linux-aarch64@4.0.2:
-    resolution: {integrity: sha512-HWevfhrShzY6kMKuMBXZZtBR2YpbZxDIkzmX9k2vp31nFlYzYxGV9ruNAyHjEcTlZkDbwxWUVMZlGdUH/GfXTQ==}
+  jinge-compiler-core-linux-aarch64@4.0.5:
+    resolution: {integrity: sha512-5Wc+rSYWJeFk2lnQ+J9ozp2SMb+AA0Gq9aS6d86Qqbn/996csgKYn6rOlhF2Mju9EMWGaz+PMHkTzKH8eG804g==}
 
-  jinge-compiler-core-linux-x86_64@4.0.2:
-    resolution: {integrity: sha512-F/Cq9YWqOixkx6yniGJ64Y6V4Z8TB1gPkLBkf/deZJyZJTNTR7bLmoPGG8gLchvJAGWEsUc5lCNtxMMu84d1rw==}
+  jinge-compiler-core-linux-x86_64@4.0.5:
+    resolution: {integrity: sha512-u082HLBmGkLb4XJntQT93euORfmNJWewH+h/cVncJvbgLiomUn6xJAj1G8fP4j4BobHr9jFMmmOhTNHBFy3ZoQ==}
 
-  jinge-compiler-core-macos-aarch64@4.0.2:
-    resolution: {integrity: sha512-0mxFLeE+he5qyQEFQTLQmqKb1EMGVYXhiIl5JghR0iU2YsYc+pCtQw/OUhATAzPES2r1Z7UDHru8VwdrZXej9A==}
+  jinge-compiler-core-macos-aarch64@4.0.5:
+    resolution: {integrity: sha512-PIaZbKkTFvsbDnZnZbBmteZo2yjTmjwugsrVgIqqCzjd0mYgHd3sGxGZx/wtF0bBkErjO0jFFzatVSRcj579lg==}
 
-  jinge-compiler-core-macos-x86_64@4.0.2:
-    resolution: {integrity: sha512-Q7uEhDgXw7wv1JqitqCmD/zxN2Pr9y5fQhmYtb4kaEQsWbYSpOGUynzlLUEh67J4fVhg14eYcSa5IEYy+jRiyA==}
+  jinge-compiler-core-macos-x86_64@4.0.5:
+    resolution: {integrity: sha512-hzMiQfVWUoBlWx7c/AkdZodz5zpXU7TM8Mbd6GGlp1s6cy04QQ3s0c94X+IGaaYP4EbIs2icPowS5Kw+Rtjuew==}
 
-  jinge-compiler-core-windows-x86_64@4.0.2:
-    resolution: {integrity: sha512-GPDwLQctB9Lv2E6zAXFduhp00HF2v9xKZUNlvuCGMoG3boHtmjQ5ivdupCmlOV/Ht38Bzh1+8nQaU/0zhDnpnA==}
+  jinge-compiler-core-windows-x86_64@4.0.5:
+    resolution: {integrity: sha512-1AGFpo65M6Jvuxaaq0sl9hplZtnUN5xV3KGGmWqpk5WcEtSz1mGuHRcd639koVVvj5gT6rxgSRxBKQ9iiIumaQ==}
 
-  jinge-compiler@4.0.2:
-    resolution: {integrity: sha512-LLrNvE8sJvufu2HQZ3hvryGpGlFgw/Pj38JpsgU+kEIP2iwyJOh+O4zffmvp8zcA6ifo8PyZRsky++YQ3aSaTw==}
+  jinge-compiler@4.0.5:
+    resolution: {integrity: sha512-rj7LTH5JhqxC3bdefkclCsgfJWx/GYaLv+ZBzpSbiMmFeJ/izBj59i7F3wsziQRGabB+v06Dcp/OlngicN46PA==}
     hasBin: true
 
-  jinge@4.0.1:
-    resolution: {integrity: sha512-E+kbqzvt0isTDV4tnjKeGnQsxNoBzQAhic8Uxkd5DdyQ5nyP8vk9WxK+nn+R9tA4yjtCwZXesckw4QSahORDRg==}
+  jinge@4.0.3:
+    resolution: {integrity: sha512-Z+GnI76UPTFofx6o6/WExuON4f8vNT8JkYJOoWeO8lMJxBMz3YMZ0txcgvzaA2zhkmK5hKyMTXtyUx8cLQfEYg==}
 
   js-yaml@4.1.0:
     resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
@@ -914,10 +914,6 @@ packages:
   mimic-function@5.0.1:
     resolution: {integrity: sha512-VP79XUPxV2CigYP3jWwAUFSku2aKqBH7uTAapFWCBqutsbmDo96KY5o8uh6U+/YSIn5OxJnXp73beVkpqMIGhA==}
     engines: {node: '>=18'}
-
-  minimatch@10.0.1:
-    resolution: {integrity: sha512-ethXTt3SGGR+95gudmqJ1eNhRO7eGEGIgYA9vnPatK4/etz2MEVDno5GMCibdMTuBMyElzIlgxMna3K94XDIDQ==}
-    engines: {node: 20 || >=22}
 
   minimatch@3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
@@ -986,6 +982,10 @@ packages:
   picomatch@2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
+
+  picomatch@4.0.2:
+    resolution: {integrity: sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==}
+    engines: {node: '>=12'}
 
   pidtree@0.6.0:
     resolution: {integrity: sha512-eG2dWTVw5bzqGRztnHExczNxt5VGsE6OwTeCG3fdUf9KBsZzO3R5OIIIzWR+iZA0NtZ+RDVdaoE2dK1cn6jH4g==}
@@ -1696,7 +1696,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import-x@4.7.2(eslint@9.22.0)(typescript@5.8.2):
+  eslint-plugin-import-x@4.8.0(eslint@9.22.0)(typescript@5.8.2):
     dependencies:
       '@types/doctrine': 0.0.9
       '@typescript-eslint/utils': 8.26.1(eslint@9.22.0)(typescript@5.8.2)
@@ -1705,8 +1705,7 @@ snapshots:
       eslint: 9.22.0
       eslint-import-resolver-node: 0.3.9
       get-tsconfig: 4.10.0
-      is-glob: 4.0.3
-      minimatch: 10.0.1
+      picomatch: 4.0.2
       rspack-resolver: 1.1.0
       semver: 7.7.1
       stable-hash: 0.0.5
@@ -1900,27 +1899,27 @@ snapshots:
 
   isexe@2.0.0: {}
 
-  jinge-compiler-core-linux-aarch64@4.0.2: {}
+  jinge-compiler-core-linux-aarch64@4.0.5: {}
 
-  jinge-compiler-core-linux-x86_64@4.0.2: {}
+  jinge-compiler-core-linux-x86_64@4.0.5: {}
 
-  jinge-compiler-core-macos-aarch64@4.0.2: {}
+  jinge-compiler-core-macos-aarch64@4.0.5: {}
 
-  jinge-compiler-core-macos-x86_64@4.0.2: {}
+  jinge-compiler-core-macos-x86_64@4.0.5: {}
 
-  jinge-compiler-core-windows-x86_64@4.0.2: {}
+  jinge-compiler-core-windows-x86_64@4.0.5: {}
 
-  jinge-compiler@4.0.2:
+  jinge-compiler@4.0.5:
     dependencies:
       csv-parse: 5.6.0
-      jinge-compiler-core-linux-aarch64: 4.0.2
-      jinge-compiler-core-linux-x86_64: 4.0.2
-      jinge-compiler-core-macos-aarch64: 4.0.2
-      jinge-compiler-core-macos-x86_64: 4.0.2
-      jinge-compiler-core-windows-x86_64: 4.0.2
+      jinge-compiler-core-linux-aarch64: 4.0.5
+      jinge-compiler-core-linux-x86_64: 4.0.5
+      jinge-compiler-core-macos-aarch64: 4.0.5
+      jinge-compiler-core-macos-x86_64: 4.0.5
+      jinge-compiler-core-windows-x86_64: 4.0.5
       typescript: 5.8.2
 
-  jinge@4.0.1: {}
+  jinge@4.0.3: {}
 
   js-yaml@4.1.0:
     dependencies:
@@ -1994,10 +1993,6 @@ snapshots:
 
   mimic-function@5.0.1: {}
 
-  minimatch@10.0.1:
-    dependencies:
-      brace-expansion: 2.0.1
-
   minimatch@3.1.2:
     dependencies:
       brace-expansion: 1.1.11
@@ -2056,6 +2051,8 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@2.3.1: {}
+
+  picomatch@4.0.2: {}
 
   pidtree@0.6.0: {}
 
