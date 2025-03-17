@@ -2,8 +2,5 @@ node_modules
 /.idea
 /.tmp
 /.vscode
+/.husky
 **/.DS_Store
-.jshintignore
-.jshintrc
-.jshint
-.jshint.json

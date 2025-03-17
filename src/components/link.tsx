@@ -50,11 +50,11 @@ function isParamsSame(pa: RouteParams, pb: RouteParams) {
   });
 }
 export function RouterLink(
-   props: Props<{
+  props: Props<{
     props: RouterLinkProps;
     children: (vm: RouterLinkState) => JNode;
   }>,
-  host: ComponentHost
+  host: ComponentHost,
 ) {
   const core = getRouterCoreContext(host);
 

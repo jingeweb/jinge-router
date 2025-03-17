@@ -16,7 +16,7 @@ export function Router(
     props: RouterProps;
     children: JNode;
   }>,
-  host: ComponentHost
+  host: ComponentHost,
 ) {
   const core = props.router;
   setComponentContext(host, ROUTER_CORE, core);

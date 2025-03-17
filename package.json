@@ -1,29 +1,29 @@
 {
   "name": "jinge-router",
-  "version": "4.0.2",
+  "version": "4.0.8",
   "description": "lightweight router for jinge web framework",
   "main": "dist/jinge-router.prod.js",
   "module": "dist/jinge-router.prod.js",
   "type": "module",
-  "types": "src/index.ts",
+  "types": "types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
+      "types": "./types/index.d.ts",
       "default": "./dist/jinge-router.prod.js"
     },
     "./dev": {
-      "types": "./src/index.ts",
+      "types": "./types/index.d.ts",
       "default": "./dist/jinge-router.dev.js"
     },
     "./source": {
-      "types": "./src/index.ts",
+      "types": "./types/index.d.ts",
       "default": "./src/index.ts"
     }
   },
   "scripts": {
     "build-dev": "NODE_ENV=development vite build --mode development -c scripts/vite.config.ts",
     "build-prod": "vite build -c scripts/vite.config.ts",
-    "build": "rm -rf dist && pnpm build-dev && pnpm build-prod",
+    "build": "rm -rf dist types && tsc -project tsconfig.types.json && pnpm build-dev && pnpm build-prod",
     "lint-fix": "eslint '**/*.{js,mjs,ts}' --fix && prettier --log-level=warn --write . !*.yaml",
     "lint": "tsc --noEmit && eslint '**/*.{js,mjs,ts}' && prettier --check . !*.yaml",
     "lint-staged": "lint-staged",
@@ -58,8 +58,8 @@
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-import-x": "^4.8.0",
     "husky": "^9.1.7",
-    "jinge": "^4.0.3",
-    "jinge-compiler": "^4.0.5",
+    "jinge": "^4.0.8",
+    "jinge-compiler": "^4.0.8",
     "lint-staged": "^15.5.0",
     "prettier": "^3.5.3",
     "typescript": "^5.8.2",
@@ -67,6 +67,6 @@
     "vite": "^6.2.2"
   },
   "peerDependencies": {
-    "jinge": "^4.0.3"
+    "jinge": "^4.0.8"
   }
 }

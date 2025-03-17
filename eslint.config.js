@@ -61,6 +61,7 @@ export default tseslint.config(
   // ignores
   {
     ignores: [
+      '**/types/',
       '**/node_modules/',
       '**/dist/',
       '**/temp/',
