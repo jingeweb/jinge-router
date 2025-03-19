@@ -28,7 +28,7 @@ export function Router(
     console.error(ex);
   }
   addMountFn(host, () => {
-    return registerEvent(window as unknown as HTMLElement, 'popstate', () => {
+    return registerEvent(window, 'popstate', () => {
       const s = location.search;
       const p = core[MODE] === 'hash' ? location.hash : location.pathname;
       // console.log('popstate', pn, s, pathname, search);

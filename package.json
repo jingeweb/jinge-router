@@ -1,6 +1,6 @@
 {
   "name": "jinge-router",
-  "version": "4.0.8",
+  "version": "4.0.9",
   "description": "lightweight router for jinge web framework",
   "main": "dist/jinge-router.prod.js",
   "module": "dist/jinge-router.prod.js",
@@ -56,10 +56,10 @@
     "@types/node": "^22.13.10",
     "eslint": "^9.22.0",
     "eslint-config-prettier": "^10.1.1",
-    "eslint-plugin-import-x": "^4.8.0",
+    "eslint-plugin-import-x": "^4.9.0",
     "husky": "^9.1.7",
-    "jinge": "^4.0.8",
-    "jinge-compiler": "^4.0.8",
+    "jinge": "^4.0.13",
+    "jinge-compiler": "^4.0.11",
     "lint-staged": "^15.5.0",
     "prettier": "^3.5.3",
     "typescript": "^5.8.2",
@@ -67,6 +67,6 @@
     "vite": "^6.2.2"
   },
   "peerDependencies": {
-    "jinge": "^4.0.8"
+    "jinge": "^4.0.13"
   }
 }
