@@ -1,7 +1,7 @@
 import {
   type ComponentHost,
   type JNode,
-  type Props,
+  type WithChildren,
   addMountFn,
   addUnmountFn,
   getFirstDOM,
@@ -50,10 +50,7 @@ function isParamsSame(pa: RouteParams, pb: RouteParams) {
   });
 }
 export function RouterLink(
-  props: Props<{
-    props: RouterLinkProps;
-    children: (vm: RouterLinkState) => JNode;
-  }>,
+  props: RouterLinkProps & WithChildren<(vm: RouterLinkState) => JNode>,
   host: ComponentHost,
 ) {
   const core = getRouterCoreContext(host);

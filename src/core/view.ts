@@ -1,6 +1,6 @@
 import {
   CONTEXT,
-  type ComponentHost,
+  ComponentHost,
   type FC,
   ROOT_NODES,
   createComment,
@@ -9,7 +9,6 @@ import {
   getLastDOM,
   handleRenderDone,
   insertBefore,
-  newComponentWithDefaultSlot,
   renderFunctionComponent,
 } from 'jinge';
 import { CORE_VIEWS, MATCH_ROUTE, type RouterCore } from './router';
@@ -27,7 +26,7 @@ export function renderView(view: ComponentHost, fc?: FC) {
     return;
   }
 
-  const newEl = newComponentWithDefaultSlot(view[CONTEXT]);
+  const newEl = new ComponentHost(view[CONTEXT]);
   const nodes = renderFunctionComponent(newEl, fc);
 
   $pa.insertBefore(nodes.length > 1 ? createFragment(nodes) : nodes[0], placeholder);

@@ -1,7 +1,7 @@
 import {
   type ComponentHost,
   type JNode,
-  type Props,
+  type WithChildren,
   addMountFn,
   registerEvent,
   setComponentContext,
@@ -11,13 +11,7 @@ import { MODE, ROUTER_CORE, type RouterCore, updateLocation, updateQuery } from 
 export interface RouterProps {
   router: RouterCore;
 }
-export function Router(
-  props: Props<{
-    props: RouterProps;
-    children: JNode;
-  }>,
-  host: ComponentHost,
-) {
+export function Router(props: RouterProps & WithChildren<JNode>, host: ComponentHost) {
   const core = props.router;
   setComponentContext(host, ROUTER_CORE, core);
   let search = location.search;
