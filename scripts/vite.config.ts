@@ -15,7 +15,10 @@ export default defineConfig({
               return (
                 res
                   // BEGIN_DROP_IN_PRODUCTION 和 END_DROP_IN_PRODUCTION 之间的代码会在构建 production 版本时删除。
-                  .replace(/\/\/ BEGIN_DROP_IN_PRODUCTION[\d\D]+?\/\/ END_DROP_IN_PRODUCTION/g, '')
+                  .replace(
+                    /\/\/ BEGIN_DROP_IN_PRODUCTION[\d\D]+?\/\/ END_DROP_IN_PRODUCTION/g,
+                    '',
+                  )
                   // Symbol() 的描述文本会在构建 production 版本时删除
                   .replace(/\bSymbol\([^)]+\)/g, 'Symbol()')
               );

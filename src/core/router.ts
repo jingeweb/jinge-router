@@ -7,7 +7,6 @@ import {
   destroyViewModelCore,
   vm,
 } from 'jinge';
-import { normPath, updateHistoryState } from './helper';
 import {
   type MatchedRoute,
   type NestRoute,
@@ -23,8 +22,10 @@ import {
   matchRoutes,
   parseRoutes,
 } from './route';
-import { renderView } from './view';
+import { normPath, updateHistoryState } from './helper';
+
 import { RouterView } from '../components';
+import { renderView } from './view';
 
 export const ROUTER_CORE = Symbol('routerCore');
 export const ROUTE_VIEW_DEEP = Symbol('routeViewDeep');
@@ -99,7 +100,11 @@ export function updateQuery(core: RouterCore, search: string) {
   }
 }
 
-export function updateLocation(core: RouterCore, pathname: string, search?: string) {
+export function updateLocation(
+  core: RouterCore,
+  pathname: string,
+  search?: string,
+) {
   pathname = normPath(pathname);
   const baseHref = core[BASE_HREF];
   if (baseHref !== '/' && pathname.startsWith(baseHref)) {
@@ -116,15 +121,22 @@ export function updateLocation(core: RouterCore, pathname: string, search?: stri
 
   const hashPrefix = core[MODE] === 'hash' ? '#' : '';
   if (matchedRoutePathLen > 0) {
-    const [routeType, routeDefine, , children] = matchedRoutePath[matchedRoutePathLen - 1][0];
+    const [routeType, routeDefine, , children] =
+      matchedRoutePath[matchedRoutePathLen - 1][0];
     if (routeType === ROUTE_TYPE_REDIRECT) {
       /** 如果匹配的路由的最后一个是 redirect 路由，直接跳转到目标。 */
-      updateHistoryState(hashPrefix + (routeDefine as RedirectRoute).redirectTo, true);
+      updateHistoryState(
+        hashPrefix + (routeDefine as RedirectRoute).redirectTo,
+        true,
+      );
       return; // important!!
     } else if (routeType === ROUTE_TYPE_NEST) {
       const redirectTo = (routeDefine as NestRoute).redirectChild;
       if (redirectTo) {
-        updateHistoryState(hashPrefix + normPath(`${pathname}/${redirectTo}`), true);
+        updateHistoryState(
+          hashPrefix + normPath(`${pathname}/${redirectTo}`),
+          true,
+        );
         return;
       }
       // 如果匹配的路由是嵌套路由，且 children 第一个是 Index 路由，则将 Index 添加到匹配，接下来渲染。
@@ -160,7 +172,7 @@ export function updateLocation(core: RouterCore, pathname: string, search?: stri
     destroyComponent(view);
   }
 
-  search !== undefined && updateQuery(core, search);
+  if (search !== undefined) updateQuery(core, search);
   const paramsList = core[PARAMS];
 
   const dropParamsCount = paramsList.length - matchedRoutePathLen;

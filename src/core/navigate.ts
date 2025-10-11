@@ -1,6 +1,7 @@
+import { MODE, type RouterCore } from './router';
+
 import { isNumber } from 'jinge';
 import { updateHistoryState } from './helper';
-import { MODE, type RouterCore } from './router';
 
 export function navigateRouter(
   core: RouterCore,

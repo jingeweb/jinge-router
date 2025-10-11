@@ -12,7 +12,12 @@ import {
   renderFunctionComponent,
 } from 'jinge';
 import { CORE_VIEWS, MATCH_ROUTE, type RouterCore } from './router';
-import { type NestRoute, type NormalRoute, ROUTE_TYPE_NEST, ROUTE_TYPE_REDIRECT } from './route';
+import {
+  type NestRoute,
+  type NormalRoute,
+  ROUTE_TYPE_NEST,
+  ROUTE_TYPE_REDIRECT,
+} from './route';
 import { RouterView } from '../components';
 
 export function renderView(view: ComponentHost, fc?: FC) {
@@ -29,7 +34,10 @@ export function renderView(view: ComponentHost, fc?: FC) {
   const newEl = new ComponentHost(view[CONTEXT]);
   const nodes = renderFunctionComponent(newEl, fc);
 
-  $pa.insertBefore(nodes.length > 1 ? createFragment(nodes) : nodes[0], placeholder);
+  $pa.insertBefore(
+    nodes.length > 1 ? createFragment(nodes) : nodes[0],
+    placeholder,
+  );
   $pa.removeChild(placeholder);
   view[ROOT_NODES].push(newEl);
   handleRenderDone(newEl);
@@ -41,7 +49,11 @@ export function deregisterView(router: RouterCore, viewDeep: number) {
   // console.log(views);
 }
 
-export function registerView(router: RouterCore, view: ComponentHost, viewDeep: number) {
+export function registerView(
+  router: RouterCore,
+  view: ComponentHost,
+  viewDeep: number,
+) {
   const views = router[CORE_VIEWS];
   if (viewDeep - 1 !== views.length) throw new Error('bad view deep');
   views.push(view);

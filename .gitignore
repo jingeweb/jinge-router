@@ -1,8 +1,6 @@
 node_modules
 /.idea
 /.tmp
-/.vscode
-!.vscode/settings.json
 **/.DS_Store
  
 dist

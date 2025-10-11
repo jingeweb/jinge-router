@@ -20,7 +20,10 @@ export function parsePath(path: string, isNestRoute: boolean): PathSegment[] {
     } else if (fc !== 58) {
       return { type: PATH_TYPE_LIT, value: pathSeg };
     } else if (pathSeg.endsWith('<num>')) {
-      return { type: PATH_TYPE_NUM, value: pathSeg.slice(1, pathSeg.length - 5) };
+      return {
+        type: PATH_TYPE_NUM,
+        value: pathSeg.slice(1, pathSeg.length - 5),
+      };
     } else {
       return { type: PATH_TYPE_STR, value: pathSeg.slice(1) };
     }

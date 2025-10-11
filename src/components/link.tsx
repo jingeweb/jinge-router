@@ -10,8 +10,13 @@ import {
   vmWatch,
 } from 'jinge';
 import { MATCH_ROUTE, ON_CHANGE, ROUTES, getRouterCoreContext } from '../core';
+import {
+  type MatchedRoute,
+  type RouteParams,
+  matchRoutes,
+} from '../core/route';
+
 import { navigateRouter } from '../core/navigate';
-import { type MatchedRoute, type RouteParams, matchRoutes } from '../core/route';
 
 export interface RouterLinkProps {
   /** 是否在新窗口中打开链接。等价于 <a target="_blank" /> */
@@ -77,7 +82,9 @@ export function RouterLink(
   });
 
   const calcActive = props.noActive !== true;
-  let toRoutePath = calcActive ? matchRoutes(props.to, core[ROUTES]) : undefined;
+  let toRoutePath = calcActive
+    ? matchRoutes(props.to, core[ROUTES])
+    : undefined;
 
   const update = (curRoutePath?: MatchedRoute[]) => {
     const toLen = toRoutePath?.length ?? 0;
@@ -123,5 +130,8 @@ export function RouterLink(
   return <>{props.children({ ...state })}</>;
 }
 // BEGIN_DROP_IN_PRODUCTION
-window.__JINGE_HMR__?.registerFunctionComponent(RouterLink, 'jinge-router::router-link');
+window.__JINGE_HMR__?.registerFunctionComponent(
+  RouterLink,
+  'jinge-router::router-link',
+);
 // END_DROP_IN_PRODUCTION

@@ -1,6 +1,12 @@
-import type { FC } from 'jinge';
+import {
+  PATH_TYPE_ANY,
+  PATH_TYPE_LIT,
+  PATH_TYPE_NUM,
+  type PathSegment,
+  parsePath,
+} from './path';
 
-import { PATH_TYPE_ANY, PATH_TYPE_LIT, PATH_TYPE_NUM, type PathSegment, parsePath } from './path';
+import type { FC } from 'jinge';
 
 export type RouteParams = Record<string, string | number>;
 export type RouteQuery = Record<string, string>;
@@ -55,7 +61,8 @@ export function parseRoutes(routeDefines: Route[]) {
   let hasIndex = false;
   const routes = routeDefines.map((routeDefine) => {
     let routeType: 0 | 1 | 2 | 3 = ROUTE_TYPE_NORMAL;
-    if ((routeDefine as RedirectRoute).redirectTo) routeType = ROUTE_TYPE_REDIRECT;
+    if ((routeDefine as RedirectRoute).redirectTo)
+      routeType = ROUTE_TYPE_REDIRECT;
     else if ((routeDefine as NestRoute).children) routeType = ROUTE_TYPE_NEST;
     else if (!(routeDefine as NormalRoute).path) {
       if (hasIndex) throw new Error('Index 路由不能重复定义');
@@ -68,8 +75,13 @@ export function parseRoutes(routeDefines: Route[]) {
       routeDefine,
       routeType === ROUTE_TYPE_INDEX
         ? undefined
-        : parsePath((routeDefine as NormalRoute).path, routeType === ROUTE_TYPE_NEST),
-      routeType === ROUTE_TYPE_NEST ? parseRoutes((routeDefine as NestRoute).children) : undefined,
+        : parsePath(
+            (routeDefine as NormalRoute).path,
+            routeType === ROUTE_TYPE_NEST,
+          ),
+      routeType === ROUTE_TYPE_NEST
+        ? parseRoutes((routeDefine as NestRoute).children)
+        : undefined,
     ];
     return parsedRoute;
   });

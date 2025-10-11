@@ -27,5 +27,8 @@ export function RouterHref(props: RouterHrefProps & WithChildren<JNode>) {
   );
 }
 // BEGIN_DROP_IN_PRODUCTION
-window.__JINGE_HMR__?.registerFunctionComponent(RouterHref, 'jinge-router::router-href');
+window.__JINGE_HMR__?.registerFunctionComponent(
+  RouterHref,
+  'jinge-router::router-href',
+);
 // END_DROP_IN_PRODUCTION

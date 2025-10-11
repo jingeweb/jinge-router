@@ -6,12 +6,21 @@ import {
   registerEvent,
   setComponentContext,
 } from 'jinge';
-import { MODE, ROUTER_CORE, type RouterCore, updateLocation, updateQuery } from '../core/router';
+import {
+  MODE,
+  ROUTER_CORE,
+  type RouterCore,
+  updateLocation,
+  updateQuery,
+} from '../core/router';
 
 export interface RouterProps {
   router: RouterCore;
 }
-export function Router(props: RouterProps & WithChildren<JNode>, host: ComponentHost) {
+export function Router(
+  props: RouterProps & WithChildren<JNode>,
+  host: ComponentHost,
+) {
   const core = props.router;
   setComponentContext(host, ROUTER_CORE, core);
   let search = location.search;
