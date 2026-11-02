@@ -1,13 +1,9 @@
-import {
-  PARAMS,
-  QUERY,
-  getRouteViewDeepContext,
-  getRouterCoreContext,
-} from './core/router';
+import { getCurrentComponentHost } from 'jinge';
+
 import type { RouteParams, RouteQuery } from './core/route';
 
-import { getCurrentComponentHost } from 'jinge';
 import { navigateRouter } from './core/navigate';
+import { PARAMS, QUERY, getRouteViewDeepContext, getRouterCoreContext } from './core/router';
 
 export function useQuery() {
   return getRouterCoreContext(getCurrentComponentHost())[QUERY] as RouteQuery;
@@ -23,10 +19,7 @@ export function useParams<T extends RouteParams = RouteParams>() {
 export function useNavigate() {
   const comp = getCurrentComponentHost();
   const core = getRouterCoreContext(comp);
-  return function navigate(
-    to: string | number,
-    options?: { replace?: boolean },
-  ) {
+  return function navigate(to: string | number, options?: { replace?: boolean }) {
     navigateRouter(core, to, options);
   };
 }

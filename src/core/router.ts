@@ -3,10 +3,12 @@ import {
   type ComponentHost,
   VM_IGNORED,
   type ViewModel,
-  destroyComponent,
   destroyViewModelCore,
   vm,
 } from 'jinge';
+
+import { RouterView } from '../components';
+import { getRouteHref, normPath, updateHistoryState } from './helper';
 import {
   type MatchedRoute,
   type NestRoute,
@@ -22,9 +24,6 @@ import {
   matchRoutes,
   parseRoutes,
 } from './route';
-import { normPath, updateHistoryState } from './helper';
-
-import { RouterView } from '../components';
 import { renderView } from './view';
 
 export const ROUTER_CORE = Symbol('routerCore');
@@ -100,18 +99,20 @@ export function updateQuery(core: RouterCore, search: string) {
   }
 }
 
-export function updateLocation(
-  core: RouterCore,
-  pathname: string,
-  search?: string,
-) {
+export function updateLocation(core: RouterCore, pathname: string, search?: string) {
   pathname = normPath(pathname);
   const baseHref = core[BASE_HREF];
-  if (baseHref !== '/' && pathname.startsWith(baseHref)) {
-    pathname = pathname.substring(baseHref.length - 1);
+  let withinBase = true;
+  if (baseHref !== '/') {
+    if (pathname === baseHref) pathname = '/';
+    else if (pathname.startsWith(`${baseHref}/`)) {
+      pathname = pathname.substring(baseHref.length);
+    } else {
+      withinBase = false;
+    }
   }
 
-  const matchedRoutePath = matchRoutes(pathname, core[ROUTES]) ?? [];
+  const matchedRoutePath = (withinBase ? matchRoutes(pathname, core[ROUTES]) : undefined) ?? [];
   let matchedRoutePathLen = matchedRoutePath.length;
   const prevMatchedRoutePath = core[MATCH_ROUTE] ?? [];
   const prevMatchedRoutePathLen = prevMatchedRoutePath.length;
@@ -119,14 +120,12 @@ export function updateLocation(
     return;
   }
 
-  const hashPrefix = core[MODE] === 'hash' ? '#' : '';
   if (matchedRoutePathLen > 0) {
-    const [routeType, routeDefine, , children] =
-      matchedRoutePath[matchedRoutePathLen - 1][0];
+    const [routeType, routeDefine, , children] = matchedRoutePath[matchedRoutePathLen - 1][0];
     if (routeType === ROUTE_TYPE_REDIRECT) {
       /** 如果匹配的路由的最后一个是 redirect 路由，直接跳转到目标。 */
       updateHistoryState(
-        hashPrefix + (routeDefine as RedirectRoute).redirectTo,
+        getRouteHref((routeDefine as RedirectRoute).redirectTo, baseHref, core[MODE]),
         true,
       );
       return; // important!!
@@ -134,7 +133,7 @@ export function updateLocation(
       const redirectTo = (routeDefine as NestRoute).redirectChild;
       if (redirectTo) {
         updateHistoryState(
-          hashPrefix + normPath(`${pathname}/${redirectTo}`),
+          getRouteHref(normPath(`${pathname}/${redirectTo}`), baseHref, core[MODE]),
           true,
         );
         return;
@@ -164,13 +163,10 @@ export function updateLocation(
   }
   // console.log(x, prevMatchedRoutePath, matchedRoutePathLen);
   const views = core[CORE_VIEWS];
-  for (let i = x + 1; i < prevMatchedRoutePathLen; i++) {
-    // 反过来，从深层级的 RouterView 到浅层级销毁。
-    const idx = prevMatchedRoutePathLen - 1 - i;
-    if (idx === 0 || idx >= views.length - 1) continue;
-    const view = views[idx];
-    destroyComponent(view);
-  }
+  // 保留第一个变化位置的出口，清理其内容时由组件树递归销毁旧子树。
+  // 必须先清理，再更新/销毁 params VM，避免旧组件继续监听新路由的数据。
+  const view = views[x + 1];
+  if (view) renderView(view);
 
   if (search !== undefined) updateQuery(core, search);
   const paramsList = core[PARAMS];
@@ -185,7 +181,13 @@ export function updateLocation(
     if (i >= paramsList.length) {
       paramsList.push(vm(mergedParams));
     } else {
-      const vmParams = paramsList[i];
+      const vmParams = paramsList[i] as ViewModel;
+      for (const k of Object.keys(vmParams)) {
+        if (!Object.hasOwn(mergedParams, k)) {
+          vmParams[k] = undefined;
+          delete vmParams[k];
+        }
+      }
       Object.entries(mergedParams).forEach(([k, v]) => {
         vmParams[k] = v;
       });
@@ -194,14 +196,9 @@ export function updateLocation(
 
   core[ON_CHANGE].forEach((fn) => fn(matchedRoutePath));
 
-  if (!matchedRoutePathLen && views.length > 0) {
-    renderView(views[0]);
+  if (!view || x + 1 >= matchedRoutePathLen) {
     return;
   }
-  if (x + 1 >= views.length) {
-    return;
-  }
-  const view = views[x + 1];
   const [routeType, routeDefine] = matchedRoutePath[x + 1][0];
   if (routeType === ROUTE_TYPE_REDIRECT) throw new Error('assert-failed');
   else if (routeType === ROUTE_TYPE_NEST) {

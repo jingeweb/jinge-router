@@ -9,14 +9,11 @@ import {
   vm,
   vmWatch,
 } from 'jinge';
-import { MATCH_ROUTE, ON_CHANGE, ROUTES, getRouterCoreContext } from '../core';
-import {
-  type MatchedRoute,
-  type RouteParams,
-  matchRoutes,
-} from '../core/route';
 
+import { BASE_HREF, MATCH_ROUTE, MODE, ON_CHANGE, ROUTES, getRouterCoreContext } from '../core';
+import { getRouteHref } from '../core/helper';
 import { navigateRouter } from '../core/navigate';
+import { type MatchedRoute, type RouteParams, matchRoutes } from '../core/route';
 
 export interface RouterLinkProps {
   /** 是否在新窗口中打开链接。等价于 <a target="_blank" /> */
@@ -59,9 +56,10 @@ export function RouterLink(
   host: ComponentHost,
 ) {
   const core = getRouterCoreContext(host);
+  const getHref = (to: string) => getRouteHref(to, core[BASE_HREF], core[MODE]);
 
   const state = vm({
-    href: props.to,
+    href: getHref(props.to),
     active: false,
     exactActive: false,
   });
@@ -72,7 +70,7 @@ export function RouterLink(
     return registerEvent(el as Element, 'click', (evt) => {
       evt.preventDefault();
       if (props.open) {
-        window.open(props.to);
+        window.open(getHref(props.to));
       } else {
         navigateRouter(core, props.to, {
           replace: props.replace,
@@ -82,9 +80,7 @@ export function RouterLink(
   });
 
   const calcActive = props.noActive !== true;
-  let toRoutePath = calcActive
-    ? matchRoutes(props.to, core[ROUTES])
-    : undefined;
+  let toRoutePath = calcActive ? matchRoutes(props.to, core[ROUTES]) : undefined;
 
   const update = (curRoutePath?: MatchedRoute[]) => {
     const toLen = toRoutePath?.length ?? 0;
@@ -107,17 +103,19 @@ export function RouterLink(
     state.exactActive = toLen === curLen;
   };
 
-  if (calcActive) {
-    update(core[MATCH_ROUTE]); // init calc
-
-    addUnmountFn(
-      host,
-      vmWatch(props, 'to', (v) => {
-        state.href = props.to;
+  addUnmountFn(
+    host,
+    vmWatch(props, 'to', (v) => {
+      state.href = getHref(v);
+      if (calcActive) {
         toRoutePath = matchRoutes(v, core[ROUTES]);
         update(core[MATCH_ROUTE]);
-      }),
-    );
+      }
+    }),
+  );
+
+  if (calcActive) {
+    update(core[MATCH_ROUTE]); // init calc
 
     const onChange = (matchRoutePath: MatchedRoute[]) => {
       update(matchRoutePath);
@@ -130,8 +128,5 @@ export function RouterLink(
   return <>{props.children({ ...state })}</>;
 }
 // BEGIN_DROP_IN_PRODUCTION
-window.__JINGE_HMR__?.registerFunctionComponent(
-  RouterLink,
-  'jinge-router::router-link',
-);
+window.__JINGE_HMR__?.registerFunctionComponent(RouterLink, 'jinge-router::router-link');
 // END_DROP_IN_PRODUCTION

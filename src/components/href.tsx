@@ -1,4 +1,5 @@
 import { type JNode, type WithChildren, cx, isUndefined } from 'jinge';
+
 import { RouterLink, type RouterLinkProps } from './link';
 
 export interface RouterHrefProps {
@@ -8,9 +9,11 @@ export interface RouterHrefProps {
   className?: string;
 }
 export function RouterHref(props: RouterHrefProps & WithChildren<JNode>) {
-  const noActive = isUndefined(props.activeClass);
   return (
-    <RouterLink to={props.to} noActive={noActive}>
+    <RouterLink
+      to={props.to}
+      noActive={isUndefined(props.activeClass) && isUndefined(props.exactActiveClass)}
+    >
       {(vm) => (
         <a
           className={cx(
@@ -27,8 +30,5 @@ export function RouterHref(props: RouterHrefProps & WithChildren<JNode>) {
   );
 }
 // BEGIN_DROP_IN_PRODUCTION
-window.__JINGE_HMR__?.registerFunctionComponent(
-  RouterHref,
-  'jinge-router::router-href',
-);
+window.__JINGE_HMR__?.registerFunctionComponent(RouterHref, 'jinge-router::router-href');
 // END_DROP_IN_PRODUCTION

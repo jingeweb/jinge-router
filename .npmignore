@@ -4,3 +4,5 @@ node_modules
 /.vscode
 /.husky
 **/.DS_Store
+/test/.compiled
+**/.results/

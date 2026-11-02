@@ -6,34 +6,30 @@ import {
   registerEvent,
   setComponentContext,
 } from 'jinge';
-import {
-  MODE,
-  ROUTER_CORE,
-  type RouterCore,
-  updateLocation,
-  updateQuery,
-} from '../core/router';
+
+import { MODE, ROUTER_CORE, type RouterCore, updateLocation, updateQuery } from '../core/router';
 
 export interface RouterProps {
   router: RouterCore;
 }
-export function Router(
-  props: RouterProps & WithChildren<JNode>,
-  host: ComponentHost,
-) {
+export function Router(props: RouterProps & WithChildren<JNode>, host: ComponentHost) {
   const core = props.router;
   setComponentContext(host, ROUTER_CORE, core);
-  let search = location.search;
-  let pathname = core[MODE] === 'hash' ? location.hash : location.pathname;
+  const readLocation = () => {
+    if (core[MODE] !== 'hash') return [location.pathname, location.search];
+    const hash = location.hash.slice(1);
+    const queryIdx = hash.indexOf('?');
+    return queryIdx < 0 ? [hash, ''] : [hash.slice(0, queryIdx), hash.slice(queryIdx)];
+  };
+  let [pathname, search] = readLocation();
   try {
-    updateLocation(core, pathname, search === '' ? undefined : search);
+    updateLocation(core, pathname, search);
   } catch (ex) {
     console.error(ex);
   }
   addMountFn(host, () => {
     return registerEvent(window, 'popstate', () => {
-      const s = location.search;
-      const p = core[MODE] === 'hash' ? location.hash : location.pathname;
+      const [p, s] = readLocation();
       // console.log('popstate', pn, s, pathname, search);
       if (pathname === p) {
         if (search === s) return; // nothing changed

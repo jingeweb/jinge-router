@@ -1,10 +1,26 @@
 {
   "name": "jinge-router",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "lightweight router for jinge web framework",
+  "keywords": [
+    "jinge",
+    "mvvm router",
+    "router",
+    "web router"
+  ],
+  "homepage": "https://github.com/jingeweb/jinge-router#readme",
+  "bugs": {
+    "url": "https://github.com/jingeweb/jinge-router/issues"
+  },
+  "license": "ISC",
+  "author": "Yuhang Ge <abeyuhang@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jingeweb/jinge-router.git"
+  },
+  "type": "module",
   "main": "dist/jinge-router.prod.js",
   "module": "dist/jinge-router.prod.js",
-  "type": "module",
   "types": "types/index.d.ts",
   "exports": {
     ".": {
@@ -21,49 +37,45 @@
     }
   },
   "scripts": {
+    "build": "rm -rf dist types && tsc -project tsconfig.types.json && pnpm build-dev && pnpm build-prod",
     "build-dev": "NODE_ENV=development vite build --mode development -c scripts/vite.config.ts",
     "build-prod": "vite build -c scripts/vite.config.ts",
-    "build": "rm -rf dist types && tsc -project tsconfig.types.json && pnpm build-dev && pnpm build-prod",
-    "lint-fix": "oxlint --type-aware --fix && biome format --fix",
-    "lint": "tsc --noEmit && oxlint --type-aware && biome format",
+    "lint": "tsc --noEmit && oxlint --type-aware && oxfmt --check",
+    "lint-fix": "oxlint --type-aware --fix && oxfmt",
     "lint-staged": "lint-staged",
-    "prepare": "husky"
+    "patch-version": "npm version patch",
+    "prepare": "husky",
+    "release:patch": "npm version patch",
+    "test": "pnpm test:unit && pnpm test:e2e",
+    "test:e2e": "node test/e2e/run.mjs",
+    "test:prepare": "node test/build.mjs",
+    "test:unit": "node test/run.mjs"
   },
-  "lint-staged": {
-    "*.{js,ts}": [
-      "oxlint --type-aware --fix",
-      "biome format --fix"
-    ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jingeweb/jinge-router.git"
-  },
-  "keywords": [
-    "jinge",
-    "router",
-    "mvvm router",
-    "web router"
-  ],
-  "author": "Yuhang Ge <abeyuhang@gmail.com>",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/jingeweb/jinge-router/issues"
-  },
-  "homepage": "https://github.com/jingeweb/jinge-router#readme",
   "devDependencies": {
-    "@biomejs/biome": "^2.2.5",
-    "@types/node": "^24.7.1",
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.6",
+    "esbuild": "^0.28.2",
     "husky": "^9.1.7",
-    "jinge": "^4.1.7",
-    "jinge-compiler": "^4.1.7",
-    "lint-staged": "^16.2.4",
-    "oxlint": "^1.22.0",
-    "oxlint-tsgolint": "^0.2.0",
-    "typescript": "^5.9.3",
-    "vite": "^7.1.9"
+    "jinge": "^4.2.0",
+    "jinge-compiler": "^4.2.0",
+    "jsdom": "^30.1.3",
+    "lint-staged": "^17.6.0",
+    "oxfmt": "^0.75.0",
+    "oxlint": "^1.90.0",
+    "oxlint-tsgolint": "^7.0.2005",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
   },
   "peerDependencies": {
-    "jinge": "^4.1.0"
+    "jinge": "^4.2.0"
+  },
+  "lint-staged": {
+    "*.{js,mjs,cjs,jsx,ts,tsx}": [
+      "oxlint --type-aware --fix",
+      "oxfmt"
+    ],
+    "*.{json,jsonc,md,yml,yaml}": [
+      "oxfmt"
+    ]
   }
 }

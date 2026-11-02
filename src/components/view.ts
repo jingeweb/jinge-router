@@ -6,11 +6,8 @@ import {
   createComment,
   setComponentContext,
 } from 'jinge';
-import {
-  ROUTE_VIEW_DEEP,
-  getRouteViewDeepContext,
-  getRouterCoreContext,
-} from '../core/router';
+
+import { ROUTE_VIEW_DEEP, getRouteViewDeepContext, getRouterCoreContext } from '../core/router';
 import { deregisterView, registerView } from '../core/view';
 
 export function RouterView(_: unknown, host: ComponentHost) {
@@ -31,8 +28,5 @@ export function RouterView(_: unknown, host: ComponentHost) {
 }
 
 // BEGIN_DROP_IN_PRODUCTION
-window.__JINGE_HMR__?.registerFunctionComponent(
-  RouterView,
-  'jinge-router::router-view',
-);
+window.__JINGE_HMR__?.registerFunctionComponent(RouterView, 'jinge-router::router-view');
 // END_DROP_IN_PRODUCTION

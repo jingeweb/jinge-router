@@ -7,3 +7,6 @@ dist
 /lib
 /types
 
+/test/.compiled
+/test/.results
+**/.results/

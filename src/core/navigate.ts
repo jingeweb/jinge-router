@@ -1,7 +1,7 @@
-import { MODE, type RouterCore } from './router';
-
 import { isNumber } from 'jinge';
-import { updateHistoryState } from './helper';
+
+import { getRouteHref, updateHistoryState } from './helper';
+import { BASE_HREF, MODE, type RouterCore } from './router';
 
 export function navigateRouter(
   core: RouterCore,
@@ -14,9 +14,8 @@ export function navigateRouter(
     history.go(to);
     return;
   }
-  const hashPrefix = core[MODE] === 'hash' ? '#' : '';
   if (to === '..') {
     throw 'todo';
   }
-  updateHistoryState(hashPrefix + to, options?.replace);
+  updateHistoryState(getRouteHref(to, core[BASE_HREF], core[MODE]), options?.replace);
 }
